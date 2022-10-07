@@ -9,6 +9,8 @@ import UserEntity from "../../data/entities/UserEntity";
 import { JwtModule } from "@nestjs/jwt";
 import AppConstants from "../../../common/AppConstants";
 import { UserMiddleware } from "./UserMiddleware";
+import { US } from "../../data/services/UserService";
+import UserServiceImpl from "../../data/services/implementations/UserServiceImpl";
 
 @Module({
   imports : [
@@ -27,6 +29,10 @@ import { UserMiddleware } from "./UserMiddleware";
     {
       provide: UP,
       useClass: UserResponseModel
+    },
+    {
+      provide: US,
+      useClass: UserServiceImpl
     }
   ],
 })
