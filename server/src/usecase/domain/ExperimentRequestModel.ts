@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, IsNumber } from "class-validator";
+import { IsDateString, IsNumber } from "class-validator";
 
 export default class ExperimentRequestModel{
 
