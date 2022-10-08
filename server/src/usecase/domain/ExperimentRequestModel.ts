@@ -3,7 +3,7 @@ import { IsDateString, IsNumber } from "class-validator";
 export default class ExperimentRequestModel{
 
   @IsNumber()
-  id: string;
+  id?: string;
 
   @IsDateString()
   startDate: string;
@@ -14,6 +14,6 @@ export default class ExperimentRequestModel{
   @IsNumber()
   deviceType: number;
 
-  code: number;
-  msg: string;
+  code?: number;
+  msg?: string;
 }

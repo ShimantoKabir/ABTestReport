@@ -22,7 +22,6 @@ export class UserController {
     @Body() userRequestModel: UserRequestModel,
     @Req() request: Request
   ): Promise<UserResponseModel> {
-    console.log(request.url);
     return await this.userInteractorBoundary.register(userRequestModel);
   }
 
