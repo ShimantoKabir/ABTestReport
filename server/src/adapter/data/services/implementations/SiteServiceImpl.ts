@@ -20,19 +20,26 @@ export default class SiteServiceImpl implements SiteService {
     return await this.siteRepository.save(siteRequestModel);
   }
 
-  async read(options: IPaginationOptions): Promise<Pagination<SiteEntity>> {
-    const queryBuilder = this.siteRepository.createQueryBuilder('s');
-    queryBuilder.orderBy('s.id', 'DESC');
+  async readAll(options: IPaginationOptions): Promise<Pagination<SiteEntity>> {
+    const queryBuilder = this.siteRepository.createQueryBuilder("s");
+    queryBuilder.orderBy("s.id", "DESC");
     return await paginate<SiteEntity>(queryBuilder, options);
   }
 
   async readById(id: number): Promise<SiteEntity> {
     return await this.siteRepository.findOneBy({
-      id : Equal(id)
-    })
+      id: Equal(id)
+    });
   }
 
-  async update(siteEntity: SiteEntity): Promise<UpdateResult> {
-    return await this.siteRepository.update(siteEntity.id, siteEntity);
+  async update(siteRequestModel: SiteRequestModel): Promise<UpdateResult> {
+    return await this.siteRepository.update(siteRequestModel.id, siteRequestModel);
+  }
+
+  async deleteById(id: number): Promise<boolean> {
+    const deletedRes = await this.siteRepository.delete({
+      id: Equal(id)
+    });
+    return Promise.resolve(deletedRes.affected > 0);
   }
 }

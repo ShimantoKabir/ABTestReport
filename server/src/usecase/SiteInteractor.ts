@@ -1,11 +1,12 @@
 import { SiteInteractorBoundary } from "./boundaries/SiteInteractorBoundary";
-import { Pagination } from "nestjs-typeorm-paginate";
+import { IPaginationOptions, Pagination } from "nestjs-typeorm-paginate";
 import SiteEntity from "../adapter/data/entities/SiteEntity";
 import SiteResponseModel from "./domain/SiteResponseModel";
 import SiteRequestModel from "./domain/SiteRequestModel";
 import { Inject, Injectable } from "@nestjs/common";
 import { SiteService, SS } from "../adapter/data/services/SiteService";
 import { SitePresenter, SP } from "./presenters/SitePresenter";
+import { IOMsg } from "../common/IOMsg";
 
 @Injectable()
 export default class SiteInteractor implements SiteInteractorBoundary{
@@ -19,25 +20,51 @@ export default class SiteInteractor implements SiteInteractorBoundary{
   }
 
   async edit(siteRequestModel: SiteRequestModel): Promise<SiteResponseModel> {
-    let response : SiteEntity | string;
+    let response : SiteRequestModel | string;
     try {
-      response = await this.siteService.create(siteRequestModel);
+      const updateResult = await this.siteService.update(siteRequestModel);
+      if (updateResult.affected > 0){
+        response = siteRequestModel;
+      }else {
+        response = IOMsg.ERROR;
+      }
     }catch (e) {
       response = e;
     }
-    return this.sitePresenter.saveResponse(response);
+    return this.sitePresenter.editResponse(response);
   }
 
-  getAll(): Promise<Pagination<SiteEntity>> {
-    return Promise.resolve(undefined);
+  async getAll(options: IPaginationOptions): Promise<SiteResponseModel> {
+    let response : Pagination<SiteEntity> | string;
+    try {
+      response = await this.siteService.readAll(options);
+    }catch (e) {
+      response = e.code;
+    }
+    return this.sitePresenter.buildGetAllResponse(response)
   }
 
-  getById(id: number): Promise<SiteResponseModel> {
-    return Promise.resolve(undefined);
+  async getById(id: number): Promise<SiteResponseModel> {
+    let response : SiteEntity | string;
+    try {
+      response = await this.siteService.readById(id);
+      if (!response){
+        response = IOMsg.USER_NOT_FOUND
+      }
+    }catch (e) {
+      response = e.code;
+    }
+    return this.sitePresenter.okResponse(response);
   }
 
-  remove(id: number): Promise<SiteResponseModel> {
-    return Promise.resolve(undefined);
+  async removeById(id: number): Promise<SiteResponseModel> {
+    let isDeleted : boolean;
+    try {
+      isDeleted = await this.siteService.deleteById(id);
+    }catch (e) {
+      isDeleted = false;
+    }
+    return this.sitePresenter.removeResponse(isDeleted);
   }
 
   async save(siteRequestModel: SiteRequestModel): Promise<SiteResponseModel> {
@@ -47,7 +74,6 @@ export default class SiteInteractor implements SiteInteractorBoundary{
     }catch (e) {
       response = e.code;
     }
-    return this.sitePresenter.saveResponse(response);
+    return this.sitePresenter.okResponse(response);
   }
-
 }

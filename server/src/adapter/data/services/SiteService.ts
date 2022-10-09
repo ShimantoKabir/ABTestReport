@@ -6,7 +6,8 @@ import SiteRequestModel from "../../../usecase/domain/SiteRequestModel";
 export const SS = "SS";
 export interface SiteService {
   readById(id: number) : Promise<SiteEntity>
+  deleteById(id: number) : Promise<boolean>
   create(siteRequestModel: SiteRequestModel) : Promise<SiteEntity>
-  read(options: IPaginationOptions): Promise<Pagination<SiteEntity>>
-  update(siteEntity: SiteEntity) : Promise<UpdateResult>
+  readAll(options: IPaginationOptions): Promise<Pagination<SiteEntity>>
+  update(siteRequestModel: SiteRequestModel) : Promise<UpdateResult>
 }

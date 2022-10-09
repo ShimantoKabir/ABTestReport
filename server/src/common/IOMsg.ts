@@ -11,5 +11,7 @@ export enum IOMsg{
   REGISTRATION_SUCCESS = "Registration successful!",
   LOGIN_UNSUCCESSFUL = "Login unsuccessful!",
   REGISTRATION_UNSUCCESSFUL = "Registration unsuccessful!",
-  JWT_ERROR = "JWT token missing!"
+  JWT_ERROR = "JWT token missing!",
+  UPDATE_OK = "Update successful!",
+  NOT_FOUND = "Not found!",
 }

@@ -7,20 +7,20 @@ export default class SiteRequestModel {
   id: number | null;
 
   @IsString()
-  @IsNotEmpty()
-  clientName: string;
+  @ValidateIf((object, value) => value !== null)
+  clientName: string | null;
 
   @IsString()
-  @IsNotEmpty()
-  siteName: string;
+  @ValidateIf((object, value) => value !== null)
+  siteName: string | null;
 
   @IsNumber()
-  @IsNotEmpty()
-  toolType: number;
+  @ValidateIf((object, value) => value !== null)
+  toolType: number | null;
 
   @IsString()
-  @IsNotEmpty()
-  apiKey: string;
+  @ValidateIf((object, value) => value !== null)
+  apiKey: string | null;
 
   code: number;
   msg: string;
