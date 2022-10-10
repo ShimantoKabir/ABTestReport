@@ -1,5 +1,7 @@
 export enum DeviceType{
-  DESKTOP = 1,
-  TABLET = 2,
-  MOBILE = 3
+  DESKTOP = "desktop",
+  TABLET = "tablet",
+  MOBILE = "mobile",
+  IPHONE = "iphone",
+  IPAD = "ipad",
 }

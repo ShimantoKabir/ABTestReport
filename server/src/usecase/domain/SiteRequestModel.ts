@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
+import { IsNumber, IsString, ValidateIf } from "class-validator";
 
 export default class SiteRequestModel {
 
@@ -7,20 +7,16 @@ export default class SiteRequestModel {
   id: number | null;
 
   @IsString()
-  @ValidateIf((object, value) => value !== null)
-  clientName: string | null;
+  clientName: string;
 
   @IsString()
-  @ValidateIf((object, value) => value !== null)
-  siteName: string | null;
+  siteName: string;
 
   @IsNumber()
-  @ValidateIf((object, value) => value !== null)
-  toolType: number | null;
+  toolType: number;
 
   @IsString()
-  @ValidateIf((object, value) => value !== null)
-  apiKey: string | null;
+  apiKey: string;
 
   code: number;
   msg: string;

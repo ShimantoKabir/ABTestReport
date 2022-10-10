@@ -88,7 +88,7 @@ export default class UserInteractor implements UserInteractorBoundary {
     }
   }
 
-  async find(username: string): Promise<UserResponseModel> {
+  async findByUsername(username: string): Promise<UserResponseModel> {
     const user: UserEntity = await this.userService.getUserByUsername(username);
     return this.userPresenter.findResponse(user ? user.username : null);
   }

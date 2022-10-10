@@ -49,7 +49,7 @@ export class UserController {
     @Param("username") username: string,
     @Req() request: Request
   ): Promise<UserResponseModel> {
-    return await this.userInteractorBoundary.find(username);
+    return await this.userInteractorBoundary.findByUsername(username);
   }
 
   @Post('logout')

@@ -7,13 +7,24 @@ import ExperimentResponseModel from "../../../usecase/domain/ExperimentResponseM
 import { UserMiddleware } from "../user/UserMiddleware";
 import { JwtModule } from "@nestjs/jwt";
 import AppConstants from "../../../common/AppConstants";
+import { ARS } from "../../report/ABTestReportService";
+import ABTestReportServiceImpl from "../../report/implementations/ABTestReportServiceImpl";
+import { SS } from "../../data/services/SiteService";
+import SiteServiceImpl from "../../data/services/implementations/SiteServiceImpl";
+import { OS } from "../../tool/OptimizelyService";
+import OptimizelyServiceImpl from "../../tool/implementations/OptimizelyServiceImpl";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import SiteEntity from "../../data/entities/SiteEntity";
+import { HttpModule } from "@nestjs/axios";
 
 @Module({
   imports : [
+    TypeOrmModule.forFeature([SiteEntity]),
     JwtModule.register({
       secret: AppConstants.JWT_SECRET_KEY,
       signOptions: {expiresIn: '1d'}
-    })
+    }),
+    HttpModule
   ],
   controllers: [ExperimentController],
   providers: [
@@ -24,6 +35,18 @@ import AppConstants from "../../../common/AppConstants";
     {
       provide: EP,
       useClass: ExperimentResponseModel
+    },
+    {
+      provide: ARS,
+      useClass: ABTestReportServiceImpl
+    },
+    {
+      provide: SS,
+      useClass: SiteServiceImpl
+    },
+    {
+      provide: OS,
+      useClass: OptimizelyServiceImpl
     }
   ],
 })

@@ -1,9 +1,10 @@
-import { IsDateString, IsNumber } from "class-validator";
+import { IsDateString, IsNumber, IsString, ValidateIf } from "class-validator";
 
 export default class ExperimentRequestModel{
 
   @IsNumber()
-  id?: string;
+  @ValidateIf((object, value) => value !== null)
+  id: number | null;
 
   @IsDateString()
   startDate: string;
@@ -11,9 +12,13 @@ export default class ExperimentRequestModel{
   @IsDateString()
   endDate: string;
 
+  @IsString()
+  deviceType: string;
+
   @IsNumber()
-  deviceType: number;
+  siteId: number;
 
   code?: number;
   msg?: string;
+  apiKey?: string;
 }
