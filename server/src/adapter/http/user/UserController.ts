@@ -39,6 +39,7 @@ export class UserController {
         username: userResponseModel.username
       });
       response.cookie("jwt", jwt, { httpOnly: true });
+      response.cookie("isLoggedIn", true);
     }
 
     return userResponseModel;
@@ -56,6 +57,7 @@ export class UserController {
   async logout(@Res({passthrough: true}) response: Response)
   {
     response.clearCookie('jwt');
+    response.cookie("isLoggedIn", false);
     return {
       msg : IOMsg.LOGOUT,
       code : IOCode.OK

@@ -1,0 +1,10 @@
+.form-container{
+    border: 1px solid lightgray;
+    margin-top: 50px;
+    border-radius: 5px;
+    padding: 30px 50px;
+    width: 500px;
+}
+.app-cursor{
+    cursor: pointer;
+}

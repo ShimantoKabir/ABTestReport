@@ -41,7 +41,13 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     const client = await auth.getClient();
     const googleSheets = google.sheets({ version: "v4", auth: client });
     const spreadsheetId = AppConstants.SPREAD_SHEET_ID;
-    
+
+    try {
+
+    }catch (e){
+
+    }
+
     // @ts-ignore
     await googleSheets.spreadsheets.values.append({
       auth,
