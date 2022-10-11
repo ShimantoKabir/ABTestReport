@@ -1,13 +1,18 @@
 import React from "react";
-import {Container, Nav, Navbar} from "react-bootstrap";
-import {Link, Navigate} from "react-router-dom";
+import {Button, Container, Nav, Navbar} from "react-bootstrap";
+import {Link} from "react-router-dom";
 import axios from "axios";
-import { useNavigate  } from "react-router-dom";
 
 export default class TopNavBar extends React.Component{
 
+	private readonly logoutBtn: React.RefObject<HTMLAnchorElement>;
+
+	constructor(props: any) {
+		super(props);
+		this.logoutBtn = React.createRef();
+	}
+
 	logout = () => {
-		let navigate = useNavigate();
 		axios({
 			method: 'POST',
 			url: 'http://localhost:3001/user/logout',
@@ -16,8 +21,9 @@ export default class TopNavBar extends React.Component{
 			},
 			withCredentials : true
 		}).then(res=>{
-			alert("Logout successful!")
-			navigate.push("/logout")
+			if (this.logoutBtn){
+				this.logoutBtn.current?.click();
+			}
 		}).catch(err=>{
 			alert("Logout unsuccessful!")
 		})
@@ -36,7 +42,12 @@ export default class TopNavBar extends React.Component{
 							<Link to="/report" className="nav-link" >Report</Link>
 							<Link to="/login" className="nav-link" >Login</Link>
 							<Link to="/registration" className="nav-link" >Registration</Link>
-							<a onClick={()=>this.logout()} className="nav-link app-cursor" >Logout</a>
+							<Button onClick={()=>this.logout()} variant="primary" size="sm">
+								Logout
+							</Button>
+							<Link ref={this.logoutBtn} to="/login" className="nav-link hide-logout" >
+								Logout
+							</Link>
 						</Nav>
 					</Navbar.Collapse>
 				</Container>

@@ -1,8 +1,8 @@
 import React from 'react';
 import './App.css';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Route, Routes } from "react-router-dom";
 import TopNavBar from "./components/TopNavBar/TopNavBar";
-import Site from "./components/Site/Report";
+import Site from "./components/Site/Site";
 import Report from "./components/Report/Report";
 import Registration from "./components/Registration/Registration";
 import Login from "./components/Login/Login";
@@ -14,7 +14,7 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <TopNavBar/>
+        <TopNavBar />
         <Routes>
           <Route element={<ProtectedRoutes />}>
             <Route path="/" element={<Home/>} />

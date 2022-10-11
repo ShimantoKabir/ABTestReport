@@ -1,13 +1,14 @@
 import React from "react";
 import {Button, Container, Form} from "react-bootstrap";
 import axios from "axios";
-
+import {Navigate} from "react-router-dom";
 
 export default class Login extends React.Component {
 
 	state = {
 		username: "",
-		password: ""
+		password: "",
+		redirect : ""
 	}
 
 	onSummit = () => {
@@ -23,13 +24,20 @@ export default class Login extends React.Component {
 			},
 			withCredentials : true
 		}).then(res=>{
-
+			this.setState({
+				redirect: "/"
+			})
 		}).catch(err=>{
 
 		})
 	}
 
 	render(): React.ReactNode {
+
+		if (this.state.redirect === "/") {
+			return <Navigate to={this.state.redirect} replace/>;
+		}
+
 		return (
 			<Container className="form-container" >
 				<h3>Login</h3>
