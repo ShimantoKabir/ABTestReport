@@ -41,11 +41,13 @@ export class UserController {
       response.cookie("jwt", jwt, {
         httpOnly: true,
         sameSite: "none",
-        secure: true
+        secure: true,
+        domain : "shimantokabir.github.io"
       });
       response.cookie("isLoggedIn", true, {
         sameSite: "none",
-        secure: true
+        secure: true,
+        domain: "shimantokabir.github.io"
       });
     }
 
