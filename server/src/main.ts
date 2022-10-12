@@ -11,6 +11,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({
     origin: 'https://shimantokabir.github.io',
+    //origin: 'http://localhost:3000',
     credentials:true
   })
   // @ts-ignore
