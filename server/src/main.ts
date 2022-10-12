@@ -10,10 +10,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.enableCors({
-    origin: 'https://shimantokabir.github.io',
-    //origin: 'http://localhost:3000',
+    origin: 'http://localhost:3000',
     credentials:true
-  })
+  });
   // @ts-ignore
   await app.listen(process.env.PORT | port);
 }
