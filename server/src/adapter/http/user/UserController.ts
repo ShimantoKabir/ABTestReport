@@ -40,10 +40,12 @@ export class UserController {
       });
       response.cookie("jwt", jwt, {
         httpOnly: true,
-        domain: "ab-production-b225.up.railway.app"
+        sameSite: "none",
+        secure: true
       });
-      response.cookie("isLoggedIn", true,{
-        domain: "ab-production-b225.up.railway.app"
+      response.cookie("isLoggedIn", true, {
+        sameSite: "none",
+        secure: true,
       });
     }
 
