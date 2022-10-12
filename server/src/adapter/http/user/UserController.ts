@@ -28,18 +28,18 @@ export class UserController {
   @Post("login")
   async login(
     @Body() userRequestModel: UserRequestModel,
-    @Res({passthrough: true}) response: Response
+    @Res({ passthrough: true }) response: Response
   ): Promise<UserResponseModel> {
 
     const userResponseModel = await this.userInteractorBoundary
-      .login(userRequestModel);
+    .login(userRequestModel);
 
     if (userResponseModel.code === IOCode.OK) {
       const jwt = await this.jwtService.signAsync({
         username: userResponseModel.username
       });
-      response.cookie("jwt", jwt, { httpOnly: true });
-      response.cookie("isLoggedIn", true);
+      response.cookie("jwt", jwt, { httpOnly: true, sameSite: "none" });
+      response.cookie("isLoggedIn", true, { sameSite: "none" });
     }
 
     return userResponseModel;
@@ -53,14 +53,13 @@ export class UserController {
     return await this.userInteractorBoundary.findByUsername(username);
   }
 
-  @Post('logout')
-  async logout(@Res({passthrough: true}) response: Response)
-  {
-    response.clearCookie('jwt');
+  @Post("logout")
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie("jwt");
     response.cookie("isLoggedIn", false);
     return {
-      msg : IOMsg.LOGOUT,
-      code : IOCode.OK
-    }
+      msg: IOMsg.LOGOUT,
+      code: IOCode.OK
+    };
   }
 }
