@@ -21,12 +21,14 @@ export default class TopNavBar extends React.Component{
 			},
 			withCredentials : true
 		}).then(res=>{
+			console.log("res=",res);
+		}).catch(err=>{
+			console.log("err=",err);
+		}).finally(()=>{
 			if (this.logoutBtn){
 				this.logoutBtn.current?.click();
 			}
-		}).catch(err=>{
-			alert("Logout unsuccessful!")
-		})
+		});
 	}
 
 	render() : React.ReactNode{

@@ -43,26 +43,32 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     const spreadsheetId = AppConstants.SPREAD_SHEET_ID;
 
     try {
+      // @ts-ignore
+      await googleSheets.spreadsheets.values.clear({
+        spreadsheetId: spreadsheetId,
+        range: "OptimizelyReport!A:T",
+        auth: auth
+      });
 
-    }catch (e){
-
+      // @ts-ignore
+      await googleSheets.spreadsheets.values.append({
+        auth,
+        spreadsheetId,
+        range: "OptimizelyReport!A:T",
+        valueInputOption: "USER_ENTERED",
+        insertDataOption: 'INSERT_ROWS',
+        resource: {
+          "majorDimension": "ROWS",
+          "values": this.prepareDtoForSheet(optimizelyDTOs)
+        }
+      });
+      experimentRequestModel.msg = IOMsg.DATA_POPULATE_SUCCESSFULLY;
+      experimentRequestModel.code = IOCode.OK;
+    }catch (e) {
+      console.log("err",e)
+      experimentRequestModel.msg = IOMsg.ERROR;
+      experimentRequestModel.code = IOCode.ERROR;
     }
-
-    // @ts-ignore
-    await googleSheets.spreadsheets.values.append({
-      auth,
-      spreadsheetId,
-      range: "OptimizelyReport!A:T",
-      valueInputOption: "USER_ENTERED",
-      insertDataOption: 'INSERT_ROWS',
-      resource: {
-        "majorDimension": "ROWS",
-        "values": this.prepareDtoForSheet(optimizelyDTOs)
-      }
-    });
-
-    experimentRequestModel.msg = IOMsg.DATA_POPULATE_SUCCESSFULLY;
-    experimentRequestModel.code = IOCode.OK;
 
     return await this.experimentPresenter.buildResponse(experimentRequestModel);
   }
@@ -82,5 +88,4 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     });
     return parent;
   }
-
 }

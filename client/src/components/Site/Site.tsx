@@ -3,6 +3,10 @@ import {Button, Container, Form, Modal, Table} from "react-bootstrap";
 import "../Site/Site.css"
 import axios from "axios";
 import {ToolType, ToolTypeToArray} from "../../types/ToolType";
+import AppConstants from "../../common/AppConstants";
+import {IOCode} from "../../common/IOCode";
+import AppAlert from "../Alert/AppAlert";
+import {IOMsg} from "../../common/IOMsg";
 
 export default class Site extends React.Component {
 
@@ -13,23 +17,51 @@ export default class Site extends React.Component {
 		toolType: 0,
 		apiKey: "",
 		toolTypes: ToolTypeToArray(),
-		sites: []
+		sites: [],
+		alert: {
+			heading: "",
+			body: "",
+			code: IOCode.EMPTY,
+			state: true
+		}
 	}
 
 	componentDidMount() {
+		this.setState({
+			alert: {
+				heading: "LOADING",
+				body: IOMsg.LOADING_MSG,
+				code: IOCode.OK,
+				state: true
+			}
+		});
 		axios({
 			method: 'GET',
-			url: 'http://localhost:3001/sites',
-			headers: {
-				'Content-Type': 'application/json',
-			},
+			url: AppConstants.baseUrl+'sites',
+			headers: AppConstants.axiosHeader,
 			withCredentials: true
 		}).then(res => {
-			this.setState({
-				sites: res.data.sites.items
-			})
+			if (res.data.code === IOCode.OK){
+				this.setState({
+					sites: res.data.sites.items,
+					alert: {
+						heading: "SUCCESS",
+						body: IOMsg.INIT_LOAD_MSG,
+						code: IOCode.OK,
+						state: false
+					}
+				})
+			}
 		}).catch(err => {
 			console.log(err);
+			this.setState({
+				alert: {
+					heading: IOMsg.ERROR_HEAD,
+					body: IOMsg.ERROR_BODY,
+					code: IOCode.ERROR,
+					state: false
+				}
+			});
 		});
 	}
 
@@ -40,12 +72,19 @@ export default class Site extends React.Component {
 	}
 
 	onSummit = () => {
+		this.setState({
+			isModalOpen: false,
+			alert: {
+				heading: IOMsg.LOADING_HEAD,
+				body: IOMsg.LOADING_MSG,
+				code: IOCode.OK,
+				state: true
+			}
+		});
 		axios({
 			method: 'POST',
-			url: 'http://localhost:3001/sites',
-			headers: {
-				'Content-Type': 'application/json',
-			},
+			url: AppConstants.baseUrl+'sites',
+			headers: AppConstants.axiosHeader,
 			data: {
 				id: null,
 				clientName: this.state.clientName,
@@ -55,25 +94,65 @@ export default class Site extends React.Component {
 			},
 			withCredentials: true
 		}).then(res => {
-			this.setState(prevState => ({
-				isModalOpen : false,
-				// @ts-ignore
-				sites: [...prevState.sites, {
-					id: res.data.site.id,
-					clientName: res.data.site.clientName,
-					siteName: res.data.site.siteName,
-					apiKey: res.data.site.apiKey,
-					toolType: res.data.site.toolType,
-				}]
-			}))
+			if (res.data.code === IOCode.OK){
+				this.setState(prevState => ({
+					alert: {
+						heading: IOMsg.SUCCESS_HEAD,
+						body: IOMsg.SITE_SAVED,
+						code: IOCode.OK,
+						state: true
+					},
+					// @ts-ignore
+					sites: [...prevState.sites, {
+						id: res.data.site.id,
+						clientName: res.data.site.clientName,
+						siteName: res.data.site.siteName,
+						apiKey: res.data.site.apiKey,
+						toolType: res.data.site.toolType,
+					}]
+				}));
+			}else {
+				this.setState({
+					alert: {
+						heading: IOMsg.ERROR_HEAD,
+						body: IOMsg.ERROR_BODY,
+						code: IOCode.ERROR,
+						state: true
+					}
+				});
+			}
 		}).catch(err => {
 			console.log(err);
+			this.setState({
+				alert: {
+					heading: IOMsg.ERROR_HEAD,
+					body: IOMsg.ERROR_BODY,
+					code: IOCode.ERROR,
+					state: true
+				}
+			});
 		})
+	}
+
+	onAlertClose = () => {
+		this.setState({
+			alert: {
+				heading: "",
+				body: "",
+				code: IOCode.EMPTY,
+				state: false
+			}
+		});
 	}
 
 	render(): React.ReactNode {
 		return (
 			<>
+				<AppAlert heading={this.state.alert.heading}
+          body={this.state.alert.body}
+          code={this.state.alert.code}
+          state={this.state.alert.state}
+          onAlertClose={this.onAlertClose}/>
 				<Modal show={this.state.isModalOpen} onHide={() => this.onModelToggle(false)}>
 					<Modal.Header closeButton>
 						<Modal.Title>Site</Modal.Title>
@@ -83,9 +162,9 @@ export default class Site extends React.Component {
 							<Form.Group className="mb-3" controlId="clientName">
 								<Form.Label>Client Name</Form.Label>
 								<Form.Control value={this.state.clientName}
-								              onChange={e => this.setState({clientName: e.target.value})}
-								              type="text"
-								              placeholder="Client Name"/>
+		              onChange={e => this.setState({clientName: e.target.value})}
+		              type="text"
+		              placeholder="Client Name"/>
 							</Form.Group>
 							<Form.Group className="mb-3" controlId="siteName">
 								<Form.Label>Site Name</Form.Label>
@@ -149,7 +228,7 @@ export default class Site extends React.Component {
 							<tbody>
 							{this.state.sites.length > 0 && this.state.sites.map((item: any,index) => (
 								<tr key={index} >
-									<td>1</td>
+									<td>{index+1}</td>
 									<td>{item.clientName}</td>
 									<td>{item.siteName}</td>
 									<td>{item.apiKey}</td>

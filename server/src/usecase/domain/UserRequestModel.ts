@@ -12,5 +12,4 @@ export default class UserRequestModel{
 
   code: number;
   msg: string;
-
 }

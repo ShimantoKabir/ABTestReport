@@ -26,6 +26,10 @@ export default class ABTestReportServiceImpl<T extends OptimizelyDto | VwoDto | 
 
       const site = await this.siteService.readById(experimentRequestModel.siteId)
 
+      if (!site){
+        return report = [];
+      }
+
       experimentRequestModel.apiKey = site.apiKey;
 
       if (site.toolType === ToolType.OPTIMIZELY){

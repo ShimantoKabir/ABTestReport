@@ -1,36 +1,83 @@
 import React from "react";
 import {Button, Container, Form} from "react-bootstrap";
 import axios from "axios";
+import {IOCode} from "../../common/IOCode";
+import AppAlert from "../Alert/AppAlert";
+import {IOMsg} from "../../common/IOMsg";
+import AppConstants from "../../common/AppConstants";
 
 export default class Registration extends React.Component{
 
 	state = {
 		username: "",
-		password: ""
+		password: "",
+		alert: {
+			heading: "",
+			body: "",
+			code: IOCode.EMPTY,
+			state: false
+		}
 	}
 
 	onSummit = () => {
+		this.setState({
+			alert: {
+				heading: IOMsg.LOADING_HEAD,
+				body: IOMsg.LOADING_MSG,
+				code: IOCode.OK,
+				state: true
+			}
+		});
 		axios({
 			method: 'POST',
-			url: 'http://localhost:3001/user/register',
-			headers : {
-				'Content-Type': 'application/json',
-			},
+			url: AppConstants.baseUrl+'user/register',
+			headers : AppConstants.axiosHeader,
 			data: {
 				username: this.state.username,
 				password: this.state.password
 			},
 			withCredentials : true
 		}).then(res=>{
-			console.log(res);
+			this.setState({
+				alert: {
+					heading: res.data.code ===  IOCode.OK ? IOMsg.SUCCESS_HEAD : IOMsg.ERROR_HEAD,
+					body: res.data.msg,
+					code: res.data.code,
+					state: true
+				}
+			});
 		}).catch(err=>{
-
+			console.log(err);
+			this.setState({
+				alert: {
+					heading: IOMsg.ERROR_HEAD,
+					body: IOMsg.ERROR_BODY,
+					code: IOCode.ERROR,
+					state: true
+				}
+			});
 		})
+	}
+
+	onAlertClose = () => {
+		this.setState({
+			alert: {
+				heading: "",
+				body: "",
+				code: IOCode.EMPTY,
+				state: false
+			}
+		});
 	}
 
 	render() : React.ReactNode {
 		return (
 			<Container className="form-container" >
+				<AppAlert heading={this.state.alert.heading}
+          body={this.state.alert.body}
+          code={this.state.alert.code}
+          state={this.state.alert.state}
+          onAlertClose={this.onAlertClose}/>
 				<h3>Registration</h3>
 				<Form>
 					<Form.Group className="mb-3" controlId="formBasicEmail">
@@ -54,6 +101,5 @@ export default class Registration extends React.Component{
 				</Form>
 			</Container>
 		);
-
 	}
 }

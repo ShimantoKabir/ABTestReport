@@ -3,9 +3,7 @@ import ExperimentRequestModel from "../../../usecase/domain/ExperimentRequestMod
 import OptimizelyDto from "../../../dto/OptimizelyDto";
 import { Injectable } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
-import { map } from "rxjs";
 import { IOCode } from "../../../common/IOCode";
-import { rethrow } from "@nestjs/core/helpers/rethrow";
 
 @Injectable()
 export default class OptimizelyServiceImpl implements OptimizelyService {

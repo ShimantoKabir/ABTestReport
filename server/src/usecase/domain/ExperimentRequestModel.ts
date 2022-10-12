@@ -1,4 +1,4 @@
-import { IsDateString, IsNumber, IsString, ValidateIf } from "class-validator";
+import { IsDateString, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
 
 export default class ExperimentRequestModel{
 
@@ -13,9 +13,11 @@ export default class ExperimentRequestModel{
   endDate: string;
 
   @IsString()
+  @IsNotEmpty()
   deviceType: string;
 
   @IsNumber()
+  @IsNotEmpty()
   siteId: number;
 
   code?: number;
