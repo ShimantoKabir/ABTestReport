@@ -13,6 +13,7 @@ async function bootstrap() {
     origin: 'http://localhost:3000',
     credentials:true
   })
-  await app.listen(port);
+  // @ts-ignore
+  await app.listen(process.env.PORT | port);
 }
 bootstrap().then(r => console.log(`App running on port ${port}....!`));
