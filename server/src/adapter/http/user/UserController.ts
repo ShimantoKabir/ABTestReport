@@ -38,8 +38,15 @@ export class UserController {
       const jwt = await this.jwtService.signAsync({
         username: userResponseModel.username
       });
-      response.cookie("jwt", jwt, { httpOnly: true, sameSite: "none" });
-      response.cookie("isLoggedIn", true, { sameSite: "none" });
+      response.cookie("jwt", jwt, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true
+      });
+      response.cookie("isLoggedIn", true, {
+        sameSite: "none",
+        secure: true
+      });
     }
 
     return userResponseModel;
