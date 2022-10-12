@@ -39,9 +39,12 @@ export class UserController {
         username: userResponseModel.username
       });
       response.cookie("jwt", jwt, {
-        httpOnly: true
+        httpOnly: true,
+        domain: "ab-production-b225.up.railway.app"
       });
-      response.cookie("isLoggedIn", true);
+      response.cookie("isLoggedIn", true,{
+        domain: "ab-production-b225.up.railway.app"
+      });
     }
 
     return userResponseModel;
