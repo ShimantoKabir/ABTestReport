@@ -39,16 +39,9 @@ export class UserController {
         username: userResponseModel.username
       });
       response.cookie("jwt", jwt, {
-        httpOnly: true,
-        sameSite: "none",
-        secure: true,
-        domain : "shimantokabir.github.io"
+        httpOnly: true
       });
-      response.cookie("isLoggedIn", true, {
-        sameSite: "none",
-        secure: true,
-        domain: "shimantokabir.github.io"
-      });
+      response.cookie("isLoggedIn", true);
     }
 
     return userResponseModel;

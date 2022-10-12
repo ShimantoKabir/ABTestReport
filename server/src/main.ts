@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({
     // origin: 'http://localhost:3000',
-    origin: 'https://shimantokabir.github.io',
+    origin: 'https://ab-production-b225.up.railway.app',
     credentials:true,
   });
   // @ts-ignore
