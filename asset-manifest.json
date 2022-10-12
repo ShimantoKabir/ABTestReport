@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/ABTestReport/client/static/css/main.7734db0e.css",
+    "main.js": "/ABTestReport/client/static/js/main.c5619108.js",
+    "static/js/787.c4e7f8f9.chunk.js": "/ABTestReport/client/static/js/787.c4e7f8f9.chunk.js",
+    "index.html": "/ABTestReport/client/index.html",
+    "main.7734db0e.css.map": "/ABTestReport/client/static/css/main.7734db0e.css.map",
+    "main.c5619108.js.map": "/ABTestReport/client/static/js/main.c5619108.js.map",
+    "787.c4e7f8f9.chunk.js.map": "/ABTestReport/client/static/js/787.c4e7f8f9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.7734db0e.css",
+    "static/js/main.c5619108.js"
+  ]
+}
