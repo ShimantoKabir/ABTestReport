@@ -46,8 +46,20 @@ class Login extends React.Component<LoginProps> {
 			withCredentials : true
 		}).then(res=>{
 			if (res.data.code === IOCode.OK){
-				this.props.cookies.set(AppConstants.loggedInCookieName, true, { path: '/' });
-				this.props.cookies.set(AppConstants.jwtCookieName, res.data.jwtToken, { path: '/' });
+				this.props.cookies.set(
+					AppConstants.loggedInCookieName,
+					true,
+					{
+						path: '/'
+					}
+				);
+				this.props.cookies.set(
+					AppConstants.jwtCookieName,
+					res.data.jwtToken,
+					{
+						path: '/'
+					}
+				);
 				this.setState({
 					alert: {
 						heading: "",
@@ -98,34 +110,36 @@ class Login extends React.Component<LoginProps> {
 		}
 
 		return (
-			<Container className="form-container" >
-				<AppAlert heading={this.state.alert.heading}
-          body={this.state.alert.body}
-          code={this.state.alert.code}
-          state={this.state.alert.state}
-          onAlertClose={this.onAlertClose}/>
-				<h3>Login</h3>
-				<Form>
-					<Form.Group className="mb-3" controlId="formBasicEmail">
-						<Form.Label>Username</Form.Label>
-						<Form.Control value={this.state.username}
-              onChange={e => this.setState({username: e.target.value})}
-              type="text"
-              placeholder="Enter username"/>
-					</Form.Group>
-					<Form.Group className="mb-3" controlId="formBasicPassword">
-						<Form.Label>Password</Form.Label>
-						<Form.Control
-							value={this.state.password}
-							onChange={e => this.setState({password: e.target.value})}
-							type="password"
-							placeholder="Password"/>
-					</Form.Group>
-					<Button onClick={() => this.onSummit()} variant="primary">
-						Submit
-					</Button>
-				</Form>
-			</Container>
+			<main className="center-main" >
+				<Container className="form-container" >
+					<AppAlert heading={this.state.alert.heading}
+	          body={this.state.alert.body}
+	          code={this.state.alert.code}
+	          state={this.state.alert.state}
+	          onAlertClose={this.onAlertClose}/>
+					<h3>Login</h3>
+					<Form>
+						<Form.Group className="mb-3" controlId="formBasicEmail">
+							<Form.Label>Username</Form.Label>
+							<Form.Control value={this.state.username}
+	              onChange={e => this.setState({username: e.target.value})}
+	              type="text"
+	              placeholder="Enter username"/>
+						</Form.Group>
+						<Form.Group className="mb-3" controlId="formBasicPassword">
+							<Form.Label>Password</Form.Label>
+							<Form.Control
+								value={this.state.password}
+								onChange={e => this.setState({password: e.target.value})}
+								type="password"
+								placeholder="Password"/>
+						</Form.Group>
+						<Button onClick={() => this.onSummit()} variant="primary">
+							Submit
+						</Button>
+					</Form>
+				</Container>
+			</main>
 		);
 	}
 }

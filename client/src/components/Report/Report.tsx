@@ -10,7 +10,7 @@ import AppConstants from "../../common/AppConstants";
 export default class Report extends React.Component {
 
 	state = {
-		id: 0,
+		id: "",
 		startDate: "",
 		endDate: "",
 		deviceType: "",
@@ -88,7 +88,7 @@ export default class Report extends React.Component {
 			headers: AppConstants.getAxiosHeader(),
 			withCredentials: true,
 			data: {
-				id: this.state.id,
+				id: Number(this.state.id),
 				startDate: this.state.startDate ? new Date(this.state.startDate).toISOString() : this.state.startDate,
 				endDate: this.state.endDate ? new Date(this.state.endDate).toISOString() : this.state.endDate,
 				deviceType: this.state.deviceType,
@@ -129,67 +129,69 @@ export default class Report extends React.Component {
 
 	render(): React.ReactNode {
 		return (
-			<Container className="form-container">
-				<AppAlert heading={this.state.alert.heading}
-          body={this.state.alert.body}
-          code={this.state.alert.code}
-          state={this.state.alert.state}
-          onAlertClose={this.onAlertClose}/>
-				<h3>Populate Report To Sheet</h3>
-				<Form>
-					<Form.Group className="mb-3" controlId="experimentId">
-						<Form.Label>Experiment Id</Form.Label>
-						<Form.Control value={this.state.id}
-              onChange={e => this.setState({id: Number(e.target.value)})}
-              type="number"
-              placeholder="Enter experiment id"/>
-					</Form.Group>
-					<Form.Group className="mb-3" controlId="startDate">
-						<Form.Label>Start Date</Form.Label>
-						<Form.Control value={this.state.startDate}
-              onChange={e => this.setState({startDate: e.target.value})}
-              type="date"
-              placeholder="Enter username"/>
-					</Form.Group>
-					<Form.Group className="mb-3" controlId="endDate">
-						<Form.Label>End Date</Form.Label>
-						<Form.Control
-							value={this.state.endDate}
-							onChange={e => this.setState({endDate: e.target.value})}
-							type="date"
-							placeholder="Password"/>
-					</Form.Group>
-					<Form.Group className="mb-3" controlId="toolType">
-						<Form.Label>Device Type</Form.Label>
-						<Form.Select
-							value={this.state.deviceType}
-							onChange={e => this.setState({deviceType: e.target.value})}>
-							<option value={""}>--select--</option>
-							{this.state.deviceTypes.map(item => (
-								<option key={item.key} value={item.value}>
-									{item.key}
-								</option>
-							))}
-						</Form.Select>
-					</Form.Group>
-					<Form.Group className="mb-3" controlId="toolType">
-						<Form.Label>Site</Form.Label>
-						<Form.Select
-							value={this.state.siteId}
-							onChange={e => this.setState({siteId: parseInt(e.target.value)})}>
-							<option value={0}>--select--</option>
-							{this.state.sites.map((item: any) => (
-								<option key={item.id} value={item.id}>
-									{item.siteName}
-								</option>
-							))}
-						</Form.Select>
-					</Form.Group>
-					<Button onClick={() => this.onSummit()} variant="primary">
-						Populate
-					</Button>
-				</Form>
-			</Container>
+			<main className="center-main" >
+				<Container className="form-container">
+					<AppAlert heading={this.state.alert.heading}
+	          body={this.state.alert.body}
+	          code={this.state.alert.code}
+	          state={this.state.alert.state}
+	          onAlertClose={this.onAlertClose}/>
+					<h3>Populate Report To Sheet</h3>
+					<Form>
+						<Form.Group className="mb-3" controlId="experimentId">
+							<Form.Label>Experiment Id</Form.Label>
+							<Form.Control value={this.state.id}
+	              onChange={e => this.setState({id: e.target.value.replace(/\D/g, '')})}
+	              type="text"
+	              placeholder="Enter experiment id"/>
+						</Form.Group>
+						<Form.Group className="mb-3" controlId="startDate">
+							<Form.Label>Start Date</Form.Label>
+							<Form.Control value={this.state.startDate}
+	              onChange={e => this.setState({startDate: e.target.value})}
+	              type="date"
+	              placeholder="Enter username"/>
+						</Form.Group>
+						<Form.Group className="mb-3" controlId="endDate">
+							<Form.Label>End Date</Form.Label>
+							<Form.Control
+								value={this.state.endDate}
+								onChange={e => this.setState({endDate: e.target.value})}
+								type="date"
+								placeholder="Password"/>
+						</Form.Group>
+						<Form.Group className="mb-3" controlId="toolType">
+							<Form.Label>Device Type</Form.Label>
+							<Form.Select
+								value={this.state.deviceType}
+								onChange={e => this.setState({deviceType: e.target.value})}>
+								<option value={""}>--select--</option>
+								{this.state.deviceTypes.map(item => (
+									<option key={item.key} value={item.value}>
+										{item.key}
+									</option>
+								))}
+							</Form.Select>
+						</Form.Group>
+						<Form.Group className="mb-3" controlId="toolType">
+							<Form.Label>Site</Form.Label>
+							<Form.Select
+								value={this.state.siteId}
+								onChange={e => this.setState({siteId: parseInt(e.target.value)})}>
+								<option value={0}>--select--</option>
+								{this.state.sites.map((item: any) => (
+									<option key={item.id} value={item.id}>
+										{item.siteName}
+									</option>
+								))}
+							</Form.Select>
+						</Form.Group>
+						<Button onClick={() => this.onSummit()} variant="primary">
+							Populate
+						</Button>
+					</Form>
+				</Container>
+			</main>
 		);
 	}
 }

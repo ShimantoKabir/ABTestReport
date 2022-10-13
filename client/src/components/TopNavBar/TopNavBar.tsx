@@ -18,20 +18,33 @@ class TopNavBar extends React.Component<TopNavBarProps>{
 		this.logoutBtn = React.createRef();
 	}
 
+	state = {
+		isLoggedIn : false
+	}
+
+	componentDidMount() {
+		this.props.cookies.addChangeListener((opt)=>{
+			if (opt.name === AppConstants.loggedInCookieName){
+				this.setState({
+					isLoggedIn : opt.value
+				})
+			}
+		});
+	}
+
 	logout = () => {
 		axios({
 			method: 'POST',
 			url: AppConstants.baseUrl+'user/logout',
 			headers : AppConstants.getAxiosHeader(),
 			withCredentials : true
-		}).then(res=>{
-			console.log("res=",res);
-		}).catch(err=>{
-			console.log("err=",err);
 		}).finally(()=>{
 			if (this.logoutBtn){
 				this.props.cookies.remove(AppConstants.jwtCookieName);
 				this.props.cookies.remove(AppConstants.loggedInCookieName);
+				this.setState({
+					isLoggedIn : false
+				})
 				this.logoutBtn.current?.click();
 			}
 		});
@@ -46,16 +59,19 @@ class TopNavBar extends React.Component<TopNavBarProps>{
 					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="me-auto"></Nav>
 						<Nav>
-							<Link to="/site" className="nav-link" >Site</Link>
-							<Link to="/report" className="nav-link" >Report</Link>
-							<Link to="/login" className="nav-link" >Login</Link>
-							<Link to="/registration" className="nav-link" >Registration</Link>
-							<Button onClick={()=>this.logout()} variant="primary" size="sm">
-								Logout
-							</Button>
-							<Link ref={this.logoutBtn} to="/login" className="nav-link hide-logout" >
-								Logout
-							</Link>
+							{this.state.isLoggedIn ?
+								<>
+                  <Link to="/site" className="nav-link" >Site</Link>
+                  <Link to="/report" className="nav-link" >Report</Link>
+                  <Button onClick={()=>this.logout()} variant="primary" size="sm">
+	                  Logout
+                  </Button>
+								</> :
+								<>
+									<Link to="/registration" className="nav-link" >Registration</Link>
+									<Link to="/login" className="nav-link" >Login</Link>
+								</>
+							}
 						</Nav>
 					</Navbar.Collapse>
 				</Container>

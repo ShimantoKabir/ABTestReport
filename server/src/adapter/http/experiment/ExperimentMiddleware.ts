@@ -16,7 +16,7 @@ export class ExperimentMiddleware implements NestMiddleware {
     if (!jwt){
       this.prepareMiddlewareResponse(res);
       return
-    }
+    } 
 
     const user = await this.jwtService.verifyAsync(jwt);
 

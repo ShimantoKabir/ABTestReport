@@ -10,7 +10,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.enableCors({
-    origin: 'https://ab-production-b225.up.railway.app',
+    // origin: 'https://ab-production-b225.up.railway.app',
+    origin: 'http://localhost:3000',
     credentials:true,
   });
   // @ts-ignore
