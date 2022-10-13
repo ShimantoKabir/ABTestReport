@@ -10,6 +10,7 @@ export default class UserResponseModel implements UserPresenter{
   code: number;
   msg: string;
   username: string;
+  jwtToken: string;
 
   async registrationResponse(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
     this.msg = userRequestModel.msg;
@@ -34,5 +35,9 @@ export default class UserResponseModel implements UserPresenter{
       this.username = username;
     }
     return this;
+  }
+
+  setJwtToken(jwtToken: string): void {
+    this.jwtToken = jwtToken;
   }
 }

@@ -6,8 +6,13 @@ import AppAlert from "../Alert/AppAlert";
 import {IOCode} from "../../common/IOCode";
 import AppConstants from "../../common/AppConstants";
 import {IOMsg} from "../../common/IOMsg";
+import { withCookies, Cookies } from 'react-cookie';
 
-export default class Login extends React.Component {
+interface LoginProps {
+	cookies : Cookies;
+}
+
+class Login extends React.Component<LoginProps> {
 
 	state = {
 		username: "",
@@ -41,6 +46,8 @@ export default class Login extends React.Component {
 			withCredentials : true
 		}).then(res=>{
 			if (res.data.code === IOCode.OK){
+				this.props.cookies.set(AppConstants.loggedInCookieName, true, { path: '/' });
+				this.props.cookies.set(AppConstants.jwtCookieName, res.data.jwtToken, { path: '/' });
 				this.setState({
 					alert: {
 						heading: "",
@@ -122,3 +129,5 @@ export default class Login extends React.Component {
 		);
 	}
 }
+
+export default withCookies(Login);

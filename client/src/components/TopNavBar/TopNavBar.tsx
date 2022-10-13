@@ -2,8 +2,14 @@ import React from "react";
 import {Button, Container, Nav, Navbar} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import axios from "axios";
+import { withCookies, Cookies } from 'react-cookie';
+import AppConstants from "../../common/AppConstants";
 
-export default class TopNavBar extends React.Component{
+interface TopNavBarProps {
+	cookies : Cookies;
+}
+
+class TopNavBar extends React.Component<TopNavBarProps>{
 
 	private readonly logoutBtn: React.RefObject<HTMLAnchorElement>;
 
@@ -15,10 +21,8 @@ export default class TopNavBar extends React.Component{
 	logout = () => {
 		axios({
 			method: 'POST',
-			url: 'http://localhost:3001/user/logout',
-			headers : {
-				'Content-Type': 'application/json',
-			},
+			url: AppConstants.baseUrl+'user/logout',
+			headers : AppConstants.axiosHeader,
 			withCredentials : true
 		}).then(res=>{
 			console.log("res=",res);
@@ -26,6 +30,8 @@ export default class TopNavBar extends React.Component{
 			console.log("err=",err);
 		}).finally(()=>{
 			if (this.logoutBtn){
+				this.props.cookies.remove(AppConstants.jwtCookieName);
+				this.props.cookies.remove(AppConstants.loggedInCookieName);
 				this.logoutBtn.current?.click();
 			}
 		});
@@ -57,3 +63,4 @@ export default class TopNavBar extends React.Component{
 		);
 	}
 }
+export default withCookies(TopNavBar);
