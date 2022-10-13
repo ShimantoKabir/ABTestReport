@@ -23,6 +23,11 @@ class TopNavBar extends React.Component<TopNavBarProps>{
 	}
 
 	componentDidMount() {
+
+		this.setState({
+			isLoggedIn : !!this.props.cookies.get(AppConstants.loggedInCookieName)
+		})
+
 		this.props.cookies.addChangeListener((opt)=>{
 			if (opt.name === AppConstants.loggedInCookieName){
 				this.setState({
