@@ -24,8 +24,11 @@ class TopNavBar extends React.Component<TopNavBarProps>{
 
 	componentDidMount() {
 
+		const loginStatus = !!this.props.cookies.get(AppConstants.loggedInCookieName);
+		console.log("loginStatus=",loginStatus)
+
 		this.setState({
-			isLoggedIn : !!this.props.cookies.get(AppConstants.loggedInCookieName)
+			isLoggedIn : loginStatus
 		})
 
 		this.props.cookies.addChangeListener((opt)=>{
