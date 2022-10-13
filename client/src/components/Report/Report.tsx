@@ -37,18 +37,29 @@ export default class Report extends React.Component {
 		axios({
 			method: 'GET',
 			url: AppConstants.baseUrl+'sites',
-			headers: AppConstants.axiosHeader,
+			headers: AppConstants.getAxiosHeader(),
 			withCredentials: true
 		}).then(res => {
-			this.setState({
-				sites: res.data.sites.items,
-				alert: {
-					heading: IOMsg.SUCCESS_HEAD,
-					body: IOMsg.INIT_LOAD_MSG,
-					code: IOCode.OK,
-					state: false
-				}
-			});
+			if (res.data.code === IOCode.OK){
+				this.setState({
+					sites: res.data.sites.items,
+					alert: {
+						heading: IOMsg.SUCCESS_HEAD,
+						body: IOMsg.INIT_LOAD_MSG,
+						code: IOCode.OK,
+						state: false
+					}
+				});
+			}else {
+				this.setState({
+					alert: {
+						heading: IOMsg.ERROR_HEAD,
+						body: res.data.msg,
+						code: IOCode.ERROR,
+						state: true
+					}
+				});
+			}
 		}).catch(err => {
 			console.log("err",err);
 			this.setState({
@@ -56,7 +67,7 @@ export default class Report extends React.Component {
 					heading: IOMsg.ERROR_HEAD,
 					body: IOMsg.ERROR_BODY,
 					code: IOCode.ERROR,
-					state: false
+					state: true
 				}
 			});
 		});
@@ -74,7 +85,7 @@ export default class Report extends React.Component {
 		axios({
 			method: 'POST',
 			url: AppConstants.baseUrl+'experiment/populate',
-			headers: AppConstants.axiosHeader,
+			headers: AppConstants.getAxiosHeader(),
 			withCredentials: true,
 			data: {
 				id: this.state.id,

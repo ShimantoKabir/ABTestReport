@@ -38,19 +38,28 @@ export default class Site extends React.Component {
 		axios({
 			method: 'GET',
 			url: AppConstants.baseUrl+'sites',
-			headers: AppConstants.axiosHeader,
+			headers: AppConstants.getAxiosHeader(),
 			withCredentials: true
 		}).then(res => {
 			if (res.data.code === IOCode.OK){
 				this.setState({
 					sites: res.data.sites.items,
 					alert: {
-						heading: "SUCCESS",
+						heading: IOMsg.SUCCESS_HEAD,
 						body: IOMsg.INIT_LOAD_MSG,
 						code: IOCode.OK,
 						state: false
 					}
-				})
+				});
+			}else {
+				this.setState({
+					alert: {
+						heading: IOMsg.ERROR_HEAD,
+						body: res.data.msg,
+						code: IOCode.ERROR,
+						state: true
+					}
+				});
 			}
 		}).catch(err => {
 			console.log(err);
@@ -59,7 +68,7 @@ export default class Site extends React.Component {
 					heading: IOMsg.ERROR_HEAD,
 					body: IOMsg.ERROR_BODY,
 					code: IOCode.ERROR,
-					state: false
+					state: true
 				}
 			});
 		});
@@ -84,7 +93,7 @@ export default class Site extends React.Component {
 		axios({
 			method: 'POST',
 			url: AppConstants.baseUrl+'sites',
-			headers: AppConstants.axiosHeader,
+			headers: AppConstants.getAxiosHeader(),
 			data: {
 				id: null,
 				clientName: this.state.clientName,

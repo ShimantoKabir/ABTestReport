@@ -22,7 +22,7 @@ class TopNavBar extends React.Component<TopNavBarProps>{
 		axios({
 			method: 'POST',
 			url: AppConstants.baseUrl+'user/logout',
-			headers : AppConstants.axiosHeader,
+			headers : AppConstants.getAxiosHeader(),
 			withCredentials : true
 		}).then(res=>{
 			console.log("res=",res);

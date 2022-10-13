@@ -11,30 +11,30 @@ export class UserMiddleware implements NestMiddleware {
 
   async use(req: Request, res: Response, next: NextFunction) {
 
-    const cookie = req.cookies["jwt"];
-    const jwtErrorRes = {
-      msg : IOMsg.JWT_ERROR,
-      code : IOCode.ERROR
-    };
+    const jwt = req.header("Authorization");
 
-    if (!cookie){
-      this.prepareMiddlewareResponse(res,jwtErrorRes);
+    if (!jwt){
+      this.prepareMiddlewareResponse(res);
       return
     }
 
-    const user = await this.jwtService.verifyAsync(cookie);
+    const user = await this.jwtService.verifyAsync(jwt);
 
     if (!user){
-      this.prepareMiddlewareResponse(res,jwtErrorRes);
+      this.prepareMiddlewareResponse(res);
       return
     }
 
     next();
   }
 
-  prepareMiddlewareResponse(res: Response, resObj) : Response {
+  prepareMiddlewareResponse(res: Response) : Response {
+    const jwtErrorRes = {
+      msg : IOMsg.JWT_ERROR,
+      code : IOCode.ERROR
+    };
     res.writeHead(200, { 'content-type': 'application/json' });
-    res.write(JSON.stringify(resObj));
+    res.write(JSON.stringify(jwtErrorRes));
     res.end();
     return res
   }
