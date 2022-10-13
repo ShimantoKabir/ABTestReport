@@ -16,7 +16,7 @@ export enum IOMsg{
   NOT_FOUND = "Not found!",
   LOADING_MSG = "Please wait....!",
   INIT_LOAD_MSG = "Initial data fetch successfully",
-  SITE_SAVED = "Initial data fetch successfully",
+  SITE_SAVED = "Site saved successfully!",
   LOADING_HEAD = "LOADING",
   SUCCESS_HEAD = "SUCCESS",
   ERROR_HEAD = "ERROR",
