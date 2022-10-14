@@ -10,10 +10,12 @@ export default class ExperimentRequestModel{
   id: number | null;
 
   @IsDateString()
-  startDate: string;
+  @ValidateIf((object, value) => value)
+  startDate?: string;
 
   @IsDateString()
-  endDate: string;
+  @ValidateIf((object, value) => value)
+  endDate?: string;
 
   @IsString()
   @IsNotEmpty()

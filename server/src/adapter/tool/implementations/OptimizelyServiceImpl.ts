@@ -6,6 +6,7 @@ import { HttpService } from "@nestjs/axios";
 import { OptimizelyDtoBuilder } from "../../../dto/builders/OptimizelyDtoBuilder";
 import OptimizelyDtoBuilderImpl from "../../../dto/builders/implementations/OptimizelyDtoBuilderImpl";
 import { IOMsg } from "../../../common/IOMsg";
+import { DeviceType } from "../../../type/DeviceType";
 
 @Injectable()
 export default class OptimizelyServiceImpl implements OptimizelyService {
@@ -14,8 +15,22 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
 
   async getResultByNetworkCall(experimentRequestModel: ExperimentRequestModel): Promise<OptimizelyDto[]> {
 
+    console.log("statdate=",experimentRequestModel.startDate);
+
     let optimizelyDTOs: OptimizelyDto[] = [];
-    const url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?start_time=${experimentRequestModel.startDate}&end_time=${experimentRequestModel.endDate}&device=${experimentRequestModel.deviceType}`;
+    let url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?`;
+
+    if (experimentRequestModel.startDate){
+      url = url+`start_time=${experimentRequestModel.startDate}&`;
+    }
+
+    if (experimentRequestModel.endDate){
+      url = url+`end_time=${experimentRequestModel.endDate}&`;
+    }
+
+    if (experimentRequestModel.deviceType !== DeviceType.ALL){
+      url = url+`device=${experimentRequestModel.deviceType}&`;
+    }
 
     try {
 
