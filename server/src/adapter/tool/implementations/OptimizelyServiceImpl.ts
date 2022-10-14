@@ -15,10 +15,7 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
   async getResultByNetworkCall(experimentRequestModel: ExperimentRequestModel): Promise<OptimizelyDto[]> {
 
     let optimizelyDTOs: OptimizelyDto[] = [];
-    const url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?
-      start_time=${experimentRequestModel.startDate}&
-      end_time=${experimentRequestModel.endDate}&
-      device=${experimentRequestModel.deviceType}`;
+    const url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?start_time=${experimentRequestModel.startDate}&end_time=${experimentRequestModel.endDate}&device=${experimentRequestModel.deviceType}`;
 
     try {
 
