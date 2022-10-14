@@ -14,12 +14,12 @@ export default class AppConstants {
 	public static jwtCookieName = "jwt";
 }
 
-function GetJwtToken() : string {
+function GetJwtToken(): string {
 	const cookieObj: { isLoggedIn: boolean, jwt: string } =
-	document.cookie.split('; ').reduce((prev: any, current: string) => {
-		const [name, ...value] = current.split('=');
-		prev[name] = value.join('=');
-		return prev;
-	}, {});
+		document.cookie.split('; ').reduce((prev: any, current: string) => {
+			const [name, ...value] = current.split('=');
+			prev[name] = value.join('=');
+			return prev;
+		}, {});
 	return cookieObj.jwt;
 }

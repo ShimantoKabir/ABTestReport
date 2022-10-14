@@ -18,8 +18,11 @@ export default class AppAlert extends React.Component<AppAlertProps> {
 
 	render(): React.ReactNode {
 		return (
-			<Alert show={this.props.state} variant={this.props.code === IOCode.ERROR ? "danger" : "success"}
-			       onClose={() => this.closeAlert()} dismissible>
+			<Alert
+				show={this.props.state}
+				variant={this.props.code === IOCode.ERROR ? "danger" : "success"}
+				onClose={() => this.closeAlert()} dismissible
+			>
 				<Alert.Heading>{this.props.heading}</Alert.Heading>
 				<p>{this.props.body}</p>
 			</Alert>

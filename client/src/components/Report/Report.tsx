@@ -8,7 +8,6 @@ import {IOMsg} from "../../common/IOMsg";
 import AppConstants from "../../common/AppConstants";
 
 export default class Report extends React.Component {
-
 	state = {
 		id: "",
 		startDate: "",
@@ -21,9 +20,9 @@ export default class Report extends React.Component {
 			heading: "",
 			body: "",
 			code: IOCode.EMPTY,
-			state: true
-		}
-	}
+			state: true,
+		},
+	};
 
 	componentDidMount() {
 		this.setState({
@@ -31,44 +30,46 @@ export default class Report extends React.Component {
 				heading: IOMsg.LOADING_HEAD,
 				body: IOMsg.LOADING_MSG,
 				code: IOCode.OK,
-				state: true
-			}
+				state: true,
+			},
 		});
 		axios({
-			method: 'GET',
-			url: AppConstants.baseUrl+'sites',
+			method: "GET",
+			url: AppConstants.baseUrl + "sites",
 			headers: AppConstants.getAxiosHeader(),
-			withCredentials: true
-		}).then(res => {
-			if (res.data.code === IOCode.OK){
+			withCredentials: true,
+		})
+		.then((res) => {
+			if (res.data.code === IOCode.OK) {
 				this.setState({
 					sites: res.data.sites.items,
 					alert: {
 						heading: IOMsg.SUCCESS_HEAD,
 						body: IOMsg.INIT_LOAD_MSG,
 						code: IOCode.OK,
-						state: false
-					}
+						state: false,
+					},
 				});
-			}else {
+			} else {
 				this.setState({
 					alert: {
 						heading: IOMsg.ERROR_HEAD,
 						body: res.data.msg,
 						code: IOCode.ERROR,
-						state: true
-					}
+						state: true,
+					},
 				});
 			}
-		}).catch(err => {
-			console.log("err",err);
+		})
+		.catch((err) => {
+			console.log("err", err);
 			this.setState({
 				alert: {
 					heading: IOMsg.ERROR_HEAD,
 					body: IOMsg.ERROR_BODY,
 					code: IOCode.ERROR,
-					state: true
-				}
+					state: true,
+				},
 			});
 		});
 	}
@@ -79,42 +80,49 @@ export default class Report extends React.Component {
 				heading: IOMsg.LOADING_HEAD,
 				body: IOMsg.LOADING_MSG,
 				code: IOCode.OK,
-				state: true
-			}
+				state: true,
+			},
 		});
 		axios({
-			method: 'POST',
-			url: AppConstants.baseUrl+'experiment/populate',
+			method: "POST",
+			url: AppConstants.baseUrl + "experiment/populate",
 			headers: AppConstants.getAxiosHeader(),
 			withCredentials: true,
 			data: {
 				id: Number(this.state.id),
-				startDate: this.state.startDate ? new Date(this.state.startDate).toISOString() : this.state.startDate,
-				endDate: this.state.endDate ? new Date(this.state.endDate).toISOString() : this.state.endDate,
+				startDate: this.state.startDate
+					? this.getStartDate()
+					: this.state.startDate,
+				endDate: this.state.endDate ? this.getEndDate() : this.state.endDate,
 				deviceType: this.state.deviceType,
-				siteId: this.state.siteId
-			}
-		}).then(res => {
+				siteId: this.state.siteId,
+			},
+		})
+		.then((res) => {
 			this.setState({
 				alert: {
-					heading: res.data.code ===  IOCode.OK ? IOMsg.SUCCESS_HEAD : IOMsg.ERROR_HEAD,
+					heading:
+						res.data.code === IOCode.OK
+							? IOMsg.SUCCESS_HEAD
+							: IOMsg.ERROR_HEAD,
 					body: res.data.msg,
 					code: res.data.code,
-					state: true
-				}
+					state: true,
+				},
 			});
-		}).catch(err => {
+		})
+		.catch((err) => {
 			console.log(err);
 			this.setState({
 				alert: {
 					heading: IOMsg.ERROR_HEAD,
 					body: err.response.data.message[0],
 					code: IOCode.ERROR,
-					state: true
-				}
+					state: true,
+				},
 			});
 		});
-	}
+	};
 
 	onAlertClose = () => {
 		this.setState({
@@ -122,50 +130,73 @@ export default class Report extends React.Component {
 				heading: "",
 				body: "",
 				code: IOCode.EMPTY,
-				state: false
-			}
+				state: false,
+			},
 		});
-	}
+	};
+
+	getStartDate = (): string => {
+		const startDate = new Date(this.state.startDate);
+		startDate.setHours(startDate.getDay() - 1);
+		startDate.setHours(startDate.getHours() - 5);
+		return startDate.toISOString();
+	};
+
+	getEndDate = (): string => {
+		const endDate = new Date(this.state.endDate);
+		endDate.setHours(endDate.getHours() + 18);
+		return endDate.toISOString();
+	};
 
 	render(): React.ReactNode {
 		return (
 			<Container className="form-container form-container-margin">
-				<AppAlert heading={this.state.alert.heading}
-          body={this.state.alert.body}
-          code={this.state.alert.code}
-          state={this.state.alert.state}
-          onAlertClose={this.onAlertClose}/>
+				<AppAlert
+					heading={this.state.alert.heading}
+					body={this.state.alert.body}
+					code={this.state.alert.code}
+					state={this.state.alert.state}
+					onAlertClose={this.onAlertClose}
+				/>
 				<h3>Populate Report To Sheet</h3>
 				<Form>
 					<Form.Group className="mb-3" controlId="experimentId">
 						<Form.Label>Experiment Id</Form.Label>
-						<Form.Control value={this.state.id}
-              onChange={e => this.setState({id: e.target.value.replace(/\D/g, '')})}
-              type="text"
-              placeholder="Enter experiment id"/>
+						<Form.Control
+							value={this.state.id}
+							onChange={(e) =>
+								this.setState({id: e.target.value.replace(/\D/g, "")})
+							}
+							type="text"
+							placeholder="Enter experiment id"
+						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="startDate">
 						<Form.Label>Start Date</Form.Label>
-						<Form.Control value={this.state.startDate}
-              onChange={e => this.setState({startDate: e.target.value})}
-              type="date"
-              placeholder="Enter username"/>
+						<Form.Control
+							value={this.state.startDate}
+							onChange={(e) => this.setState({startDate: e.target.value})}
+							type="date"
+							placeholder="Enter username"
+						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="endDate">
 						<Form.Label>End Date</Form.Label>
 						<Form.Control
 							value={this.state.endDate}
-							onChange={e => this.setState({endDate: e.target.value})}
+							onChange={(e) => this.setState({endDate: e.target.value})}
 							type="date"
-							placeholder="Password"/>
+							placeholder="Password"
+						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="toolType">
 						<Form.Label>Device Type</Form.Label>
 						<Form.Select
 							value={this.state.deviceType}
-							onChange={e => this.setState({deviceType: e.target.value})}>
+							onChange={(e) => this.setState({deviceType: e.target.value})}
+						>
 							<option value={""}>--select--</option>
-							{this.state.deviceTypes.map(item => (
+							{this.state.deviceTypes.map((item) => (
 								<option key={item.key} value={item.value}>
 									{item.key}
 								</option>
@@ -176,7 +207,10 @@ export default class Report extends React.Component {
 						<Form.Label>Site</Form.Label>
 						<Form.Select
 							value={this.state.siteId}
-							onChange={e => this.setState({siteId: parseInt(e.target.value)})}>
+							onChange={(e) =>
+								this.setState({siteId: parseInt(e.target.value)})
+							}
+						>
 							<option value={0}>--select--</option>
 							{this.state.sites.map((item: any) => (
 								<option key={item.id} value={item.id}>
