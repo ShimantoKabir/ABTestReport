@@ -16,6 +16,8 @@ import OptimizelyServiceImpl from "../../tool/implementations/OptimizelyServiceI
 import { TypeOrmModule } from "@nestjs/typeorm";
 import SiteEntity from "../../data/entities/SiteEntity";
 import { HttpModule } from "@nestjs/axios";
+import { GSS } from "../../sheet/GoogleSheetService";
+import { GoogleSheetServiceImpl } from "../../sheet/implementations/GoogleSheetServiceImpl";
 
 @Module({
   imports : [
@@ -47,6 +49,10 @@ import { HttpModule } from "@nestjs/axios";
     {
       provide: OS,
       useClass: OptimizelyServiceImpl
+    },
+    {
+      provide: GSS,
+      useClass: GoogleSheetServiceImpl
     }
   ],
 })

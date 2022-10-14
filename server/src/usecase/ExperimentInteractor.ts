@@ -3,12 +3,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import ExperimentRequestModel from "./domain/ExperimentRequestModel";
 import ExperimentResponseModel from "./domain/ExperimentResponseModel";
 import { EP, ExperimentPresenter } from "./presenters/ExperimentPresenter";
-import { google } from "googleapis";
-import AppConstants from "../common/AppConstants";
 import { IOMsg } from "../common/IOMsg";
 import { IOCode } from "../common/IOCode";
 import { ABTestReportService, ARS } from "../adapter/report/ABTestReportService";
 import OptimizelyDto from "../dto/OptimizelyDto";
+import { SiteService, SS } from "../adapter/data/services/SiteService";
+import { ToolType } from "../type/ToolType";
+import { GoogleSheetService, GSS } from "../adapter/sheet/GoogleSheetService";
 
 @Injectable()
 export default class ExperimentInteractor implements ExperimentInteractorBoundary {
@@ -17,7 +18,11 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     @Inject(EP)
     private readonly experimentPresenter: ExperimentPresenter,
     @Inject(ARS)
-    private readonly optimizelyReportService : ABTestReportService<OptimizelyDto>
+    private readonly optimizelyReportService : ABTestReportService<OptimizelyDto>,
+    @Inject(SS)
+    private readonly siteService: SiteService,
+    @Inject(GSS)
+    private readonly optimizelySheetService: GoogleSheetService<OptimizelyDto>
   ) {}
 
   async populateDataToSheet(experimentRequestModel: ExperimentRequestModel): Promise<ExperimentResponseModel> {
@@ -25,67 +30,42 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     experimentRequestModel.msg = IOMsg.DATA_POPULATE_SUCCESSFULLY;
     experimentRequestModel.code = IOCode.OK;
 
-    const optimizelyDTOs : OptimizelyDto[] = await this.optimizelyReportService.getReportData(experimentRequestModel);
+    const site = await this.siteService.readById(experimentRequestModel.siteId)
 
-    if (optimizelyDTOs.length === 0){
-      experimentRequestModel.msg = IOMsg.ERROR;
+    if (!site){
+      experimentRequestModel.msg = IOMsg.NO_SITE;
       experimentRequestModel.code = IOCode.ERROR;
       return await this.experimentPresenter.buildResponse(experimentRequestModel);
     }
 
-    const auth = new google.auth.GoogleAuth({
-      keyFile: "credentials.json",
-      scopes: AppConstants.GOOGLE_AUTH_SCOPES,
-    });
+    experimentRequestModel.apiKey = site.apiKey;
+    experimentRequestModel.toolType = site.toolType;
 
-    const client = await auth.getClient();
-    const googleSheets = google.sheets({ version: "v4", auth: client });
-    const spreadsheetId = AppConstants.SPREAD_SHEET_ID;
+    if (site.toolType === ToolType.OPTIMIZELY){
+      experimentRequestModel.sheetRange = "OptimizelyReport!A:T";
+      experimentRequestModel.dtoList = await this.optimizelyReportService
+        .getReportData(experimentRequestModel) as OptimizelyDto[];
 
-    try {
-      // @ts-ignore
-      await googleSheets.spreadsheets.values.clear({
-        spreadsheetId: spreadsheetId,
-        range: "OptimizelyReport!A:T",
-        auth: auth
-      });
+      if (experimentRequestModel.dtoList.length === 0){
+        experimentRequestModel.msg = IOMsg.NO_DATA_API;
+        experimentRequestModel.code = IOCode.ERROR;
+        return await this.experimentPresenter.buildResponse(experimentRequestModel);
+      }
 
-      // @ts-ignore
-      await googleSheets.spreadsheets.values.append({
-        auth,
-        spreadsheetId,
-        range: "OptimizelyReport!A:T",
-        valueInputOption: "USER_ENTERED",
-        insertDataOption: 'INSERT_ROWS',
-        resource: {
-          "majorDimension": "ROWS",
-          "values": this.prepareDtoForSheet(optimizelyDTOs)
-        }
-      });
-      experimentRequestModel.msg = IOMsg.DATA_POPULATE_SUCCESSFULLY;
-      experimentRequestModel.code = IOCode.OK;
-    }catch (e) {
-      console.log("err",e)
-      experimentRequestModel.msg = IOMsg.ERROR;
+      const isInsertOK = await this.optimizelySheetService.insert(experimentRequestModel);
+
+      if (!isInsertOK){
+        experimentRequestModel.msg = IOMsg.ERROR;
+        experimentRequestModel.code = IOCode.ERROR;
+        return await this.experimentPresenter.buildResponse(experimentRequestModel);
+      }
+
+    }else {
+      experimentRequestModel.msg = IOMsg.COMING_SOON;
       experimentRequestModel.code = IOCode.ERROR;
+      return await this.experimentPresenter.buildResponse(experimentRequestModel);
     }
 
     return await this.experimentPresenter.buildResponse(experimentRequestModel);
-  }
-
-  prepareDtoForSheet(optimizelyDTOs : OptimizelyDto[]) {
-    let parent = [];
-    const optimizelyDtoKeys = Object.keys(optimizelyDTOs[0]).map(function (key) {
-      return key;
-    });
-    parent.push(optimizelyDtoKeys);
-    optimizelyDTOs.forEach((obj,index)=>{
-      let child = [];
-      optimizelyDtoKeys.forEach(key=>{
-        child.push(obj[key])
-      });
-      parent.push(child)
-    });
-    return parent;
   }
 }

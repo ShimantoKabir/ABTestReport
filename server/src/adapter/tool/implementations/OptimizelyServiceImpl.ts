@@ -3,29 +3,36 @@ import ExperimentRequestModel from "../../../usecase/domain/ExperimentRequestMod
 import OptimizelyDto from "../../../dto/OptimizelyDto";
 import { Injectable } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
-import { IOCode } from "../../../common/IOCode";
+import { OptimizelyDtoBuilder } from "../../../dto/builders/OptimizelyDtoBuilder";
+import OptimizelyDtoBuilderImpl from "../../../dto/builders/implementations/OptimizelyDtoBuilderImpl";
+import { IOMsg } from "../../../common/IOMsg";
 
 @Injectable()
 export default class OptimizelyServiceImpl implements OptimizelyService {
 
-  constructor(private readonly httpService: HttpService) {
-  }
+  constructor(private readonly httpService: HttpService) {}
 
   async getResultByNetworkCall(experimentRequestModel: ExperimentRequestModel): Promise<OptimizelyDto[]> {
 
-    const url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?start_time=${experimentRequestModel.startDate}&end_time=${experimentRequestModel.endDate}&device=${experimentRequestModel.deviceType}`;
-
-    const networkRes = await this.httpService.axiosRef.get(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${experimentRequestModel.apiKey}`
-      }
-    });
-
     let optimizelyDTOs: OptimizelyDto[] = [];
+    const url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?
+      start_time=${experimentRequestModel.startDate}&
+      end_time=${experimentRequestModel.endDate}&
+      device=${experimentRequestModel.deviceType}`;
 
-    if (networkRes.status === IOCode.NETWORK_SUCCESS) {
+    try {
+
+      const networkRes = await this.httpService.axiosRef.get(url, {
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${experimentRequestModel.apiKey}`
+        }
+      });
+
       optimizelyDTOs = this.formatData(networkRes.data);
+
+    }catch (e) {
+      console.log(`${OptimizelyServiceImpl.name}, error=`,JSON.stringify(e))
     }
 
     return optimizelyDTOs;
@@ -40,42 +47,44 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
       resultKeys.forEach((key) => {
 
         const variation = metric.results[key];
-        let optimizelyDto: OptimizelyDto = new OptimizelyDto();
 
-        optimizelyDto.startTimeUTC = data.start_time;
-        optimizelyDto.endTimeUTC = data.end_time;
-        optimizelyDto.variationName = variation.name;
-        optimizelyDto.variationId = variation.variation_id;
-        optimizelyDto.isBaselineVariation = variation.is_baseline;
-        optimizelyDto.metricEventName = metric.name;
-        optimizelyDto.metricEventId = metric.event_id;
-        optimizelyDto.metricNumeratorType = metric.aggregator;
-        optimizelyDto.metricDenominatorType = metric.scope;
-        optimizelyDto.metricWinningDirection = metric.winning_direction;
-        optimizelyDto.numeratorValue = variation.value;
-        optimizelyDto.denominatorValue = variation.samples;
-        optimizelyDto.metricValue = variation.rate;
+        let optimizelyDtoBuilder : OptimizelyDtoBuilder = new OptimizelyDtoBuilderImpl();
+
+        optimizelyDtoBuilder.withStartTimeUTC(data.start_time)
+          .withEndTimeUTC(data.end_time)
+          .withVariationName(variation.name)
+          .withVariationId(variation.variation_id)
+          .isBaselineVariation(variation.is_baseline)
+          .withMetricEventName(metric.name)
+          .withMetricEventId(metric.event_id)
+          .withMetricNumeratorType(metric.aggregator)
+          .withMetricDenominatorType(metric.scope)
+          .withMetricWinningDirection(metric.winning_direction)
+          .withNumeratorValue(variation.value)
+          .withDenominatorValue(variation.samples)
+          .withMetricValue(variation.rate);
 
         if (variation.lift) {
-          optimizelyDto.improvementStatusFromBaseline = variation.lift.lift_status;
-          optimizelyDto.improvementValueFromBaseline = variation.lift.value;
-          optimizelyDto.statisticalSignificance = variation.lift.significance;
-          optimizelyDto.isImprovementSignificant = variation.lift.is_significant;
-          optimizelyDto.confidenceIntervalLow = variation.lift.confidence_interval[0];
-          optimizelyDto.confidenceIntervalHigh = variation.lift.confidence_interval[1];
-          optimizelyDto.samplesRemainingToSignificance = variation.lift.visitors_remaining;
+          optimizelyDtoBuilder
+            .withImprovementStatusFromBaseline(variation.lift.lift_status)
+            .withImprovementValueFromBaseline(variation.lift.value)
+            .withStatisticalSignificance(variation.lift.significance)
+            .isImprovementSignificant(variation.lift.is_significant)
+            .withConfidenceIntervalLow(variation.lift.confidence_interval[0])
+            .withConfidenceIntervalHigh(variation.lift.confidence_interval[1])
+            .withSamplesRemainingToSignificance(variation.lift.visitors_remaining)
         } else {
-          optimizelyDto.improvementStatusFromBaseline = "N/A";
-          optimizelyDto.improvementValueFromBaseline = "N/A";
-          optimizelyDto.statisticalSignificance = "N/A";
-          optimizelyDto.isImprovementSignificant = "N/A";
-          optimizelyDto.confidenceIntervalLow = "N/A";
-          optimizelyDto.confidenceIntervalHigh = "N/A";
-          optimizelyDto.samplesRemainingToSignificance = "N/A";
+          optimizelyDtoBuilder
+            .withImprovementStatusFromBaseline(IOMsg.NA)
+            .withImprovementValueFromBaseline(IOMsg.NA)
+            .withStatisticalSignificance(IOMsg.NA)
+            .isImprovementSignificant(IOMsg.NA)
+            .withConfidenceIntervalLow(IOMsg.NA)
+            .withConfidenceIntervalHigh(IOMsg.NA)
+            .withSamplesRemainingToSignificance(IOMsg.NA)
         }
 
-        optimizelyDTOs.push(optimizelyDto);
-
+        optimizelyDTOs.push(optimizelyDtoBuilder.build());
       });
     });
     return optimizelyDTOs;

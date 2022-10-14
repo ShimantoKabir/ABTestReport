@@ -4,4 +4,5 @@ export enum DeviceType{
   MOBILE = "mobile",
   IPHONE = "iphone",
   IPAD = "ipad",
+  ALL = "all",
 }

@@ -2,6 +2,7 @@ import { OptimizelyDtoBuilder } from "../OptimizelyDtoBuilder";
 import OptimizelyDto from "../../OptimizelyDto";
 
 export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder{
+
   optimizelyDto: OptimizelyDto;
 
   constructor() {

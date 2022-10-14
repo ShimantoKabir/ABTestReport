@@ -5,7 +5,6 @@ import { OptimizelyService, OS } from "../../tool/OptimizelyService";
 import OptimizelyDto from "../../../dto/OptimizelyDto";
 import VwoDto from "../../../dto/VwoDto";
 import AdobeTargetDto from "../../../dto/AdobeTargetDto";
-import { SiteService, SS } from "../../data/services/SiteService";
 import { ToolType } from "../../../type/ToolType";
 
 @Injectable()
@@ -14,9 +13,7 @@ export default class ABTestReportServiceImpl<T extends OptimizelyDto | VwoDto | 
 
   constructor(
     @Inject(OS)
-    private readonly optimizelyService: OptimizelyService,
-    @Inject(SS)
-    private readonly siteService: SiteService
+    private readonly optimizelyService: OptimizelyService
   ) {
   }
 
@@ -24,20 +21,14 @@ export default class ABTestReportServiceImpl<T extends OptimizelyDto | VwoDto | 
 
       let report : T[];
 
-      const site = await this.siteService.readById(experimentRequestModel.siteId)
-
-      if (!site){
-        return report = [];
-      }
-
-      experimentRequestModel.apiKey = site.apiKey;
-
-      if (site.toolType === ToolType.OPTIMIZELY){
+      if (experimentRequestModel.toolType === ToolType.OPTIMIZELY){
         report = await this.optimizelyService.getResultByNetworkCall(experimentRequestModel) as T[];
-      }else if (site.toolType === ToolType.VWO) {
+      }else if (experimentRequestModel.toolType === ToolType.VWO) {
         // for vwo
+        report = [];
       }else {
         // for adobe target
+        report = [];
       }
 
       return report;

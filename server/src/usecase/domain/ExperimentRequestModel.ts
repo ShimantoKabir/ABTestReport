@@ -1,4 +1,7 @@
 import { IsDateString, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
+import VwoDto from "../../dto/VwoDto";
+import OptimizelyDto from "../../dto/OptimizelyDto";
+import AdobeTargetDto from "../../dto/AdobeTargetDto";
 
 export default class ExperimentRequestModel{
 
@@ -23,4 +26,8 @@ export default class ExperimentRequestModel{
   code?: number;
   msg?: string;
   apiKey?: string;
+  sheetId?: string;
+  sheetRange?: string;
+  toolType?: number;
+  dtoList?: OptimizelyDto[] | AdobeTargetDto[] | VwoDto[]
 }

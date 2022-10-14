@@ -1,8 +1,6 @@
 import OptimizelyDto from "../OptimizelyDto";
 
-export const ODB = "ODB";
 export interface OptimizelyDtoBuilder{
-  optimizelyDto : OptimizelyDto;
   withStartTimeUTC(startTimeUTC: string): this
   withEndTimeUTC(endTimeUTC: string): this
   withVariationName(variationName: string): this
