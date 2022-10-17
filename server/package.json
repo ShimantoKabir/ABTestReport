@@ -2,7 +2,7 @@
   "name": "server",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "MD. Abdullah Al Shahariar Kabir",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -72,8 +72,8 @@
       "json",
       "ts"
     ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "rootDir": "test",
+    "testRegex": ".*\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

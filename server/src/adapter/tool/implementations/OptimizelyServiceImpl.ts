@@ -11,26 +11,13 @@ import { DeviceType } from "../../../type/DeviceType";
 @Injectable()
 export default class OptimizelyServiceImpl implements OptimizelyService {
 
-  constructor(private readonly httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) {
+  }
 
   async getResultByNetworkCall(experimentRequestModel: ExperimentRequestModel): Promise<OptimizelyDto[]> {
 
-    console.log("statdate=",experimentRequestModel.startDate);
-
     let optimizelyDTOs: OptimizelyDto[] = [];
-    let url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?`;
-
-    if (experimentRequestModel.startDate){
-      url = url+`start_time=${experimentRequestModel.startDate}&`;
-    }
-
-    if (experimentRequestModel.endDate){
-      url = url+`end_time=${experimentRequestModel.endDate}&`;
-    }
-
-    if (experimentRequestModel.deviceType !== DeviceType.ALL){
-      url = url+`device=${experimentRequestModel.deviceType}&`;
-    }
+    let url = this.addQueryToUrl(experimentRequestModel);
 
     try {
 
@@ -41,28 +28,29 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
         }
       });
 
-      optimizelyDTOs = this.formatData(networkRes.data);
+      optimizelyDTOs = this.responseToDtoList(networkRes.data);
 
-    }catch (e) {
-      console.log(`${OptimizelyServiceImpl.name}, error=`,JSON.stringify(e))
+    } catch (e) {
+      console.log(`${OptimizelyServiceImpl.name}, error=`, JSON.stringify(e));
     }
 
     return optimizelyDTOs;
   }
 
-  formatData(data: any): OptimizelyDto[] {
+  responseToDtoList(data: any): OptimizelyDto[] {
 
-    const optimizelyDTOs: OptimizelyDto[] = [];
+    let optimizelyDTOs: OptimizelyDto[];
 
-    data.metrics.forEach(metric => {
-      const resultKeys = Object.keys(metric.results);
-      resultKeys.forEach((key) => {
+    try {
+      optimizelyDTOs = [];
+      data.metrics.forEach(metric => {
+        const resultKeys = Object.keys(metric.results);
+        resultKeys.forEach((key) => {
 
-        const variation = metric.results[key];
+          const variation = metric.results[key];
+          let optimizelyDtoBuilder: OptimizelyDtoBuilder = new OptimizelyDtoBuilderImpl();
 
-        let optimizelyDtoBuilder : OptimizelyDtoBuilder = new OptimizelyDtoBuilderImpl();
-
-        optimizelyDtoBuilder.withStartTimeUTC(data.start_time)
+          optimizelyDtoBuilder.withStartTimeUTC(data.start_time)
           .withEndTimeUTC(data.end_time)
           .withVariationName(variation.name)
           .withVariationId(variation.variation_id)
@@ -76,29 +64,52 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
           .withDenominatorValue(variation.samples)
           .withMetricValue(variation.rate);
 
-        if (variation.lift) {
-          optimizelyDtoBuilder
+          if (variation.lift) {
+            optimizelyDtoBuilder
             .withImprovementStatusFromBaseline(variation.lift.lift_status)
             .withImprovementValueFromBaseline(variation.lift.value)
             .withStatisticalSignificance(variation.lift.significance)
             .isImprovementSignificant(variation.lift.is_significant)
             .withConfidenceIntervalLow(variation.lift.confidence_interval[0])
             .withConfidenceIntervalHigh(variation.lift.confidence_interval[1])
-            .withSamplesRemainingToSignificance(variation.lift.visitors_remaining)
-        } else {
-          optimizelyDtoBuilder
+            .withSamplesRemainingToSignificance(variation.lift.visitors_remaining);
+          } else {
+            optimizelyDtoBuilder
             .withImprovementStatusFromBaseline(IOMsg.NA)
             .withImprovementValueFromBaseline(IOMsg.NA)
             .withStatisticalSignificance(IOMsg.NA)
             .isImprovementSignificant(IOMsg.NA)
             .withConfidenceIntervalLow(IOMsg.NA)
             .withConfidenceIntervalHigh(IOMsg.NA)
-            .withSamplesRemainingToSignificance(IOMsg.NA)
-        }
+            .withSamplesRemainingToSignificance(IOMsg.NA);
+          }
 
-        optimizelyDTOs.push(optimizelyDtoBuilder.build());
+          optimizelyDTOs.push(optimizelyDtoBuilder.build());
+        });
       });
-    });
+    } catch (e) {
+      console.log("error=",e);
+      optimizelyDTOs = [];
+    }
     return optimizelyDTOs;
+  }
+
+  addQueryToUrl(experimentRequestModel: ExperimentRequestModel): string {
+
+    let url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?`;
+
+    if (experimentRequestModel.startDate) {
+      url = url + `start_time=${experimentRequestModel.startDate}&`;
+    }
+
+    if (experimentRequestModel.endDate) {
+      url = url + `end_time=${experimentRequestModel.endDate}&`;
+    }
+
+    if (experimentRequestModel.deviceType !== DeviceType.ALL) {
+      url = url + `device=${experimentRequestModel.deviceType}&`;
+    }
+
+    return url;
   }
 }
