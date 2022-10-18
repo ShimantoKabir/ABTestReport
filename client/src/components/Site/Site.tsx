@@ -7,15 +7,8 @@ import AppConstants from "../../common/AppConstants";
 import {IOCode} from "../../common/IOCode";
 import AppAlert from "../Alert/AppAlert";
 import {IOMsg} from "../../common/IOMsg";
-import {AppDispatch, RootState} from "../../app/store";
-import {connect} from "react-redux";
-import {loadSite} from "./SiteSlice";
 
-interface SiteProps {
-	dispatch : AppDispatch
-}
-
-class Site extends React.Component<SiteProps> {
+export default class Site extends React.Component {
 
 	state = {
 		isModalOpen: false,
@@ -34,54 +27,51 @@ class Site extends React.Component<SiteProps> {
 	}
 
 	componentDidMount() {
-		console.log("hi")
-		this.props.dispatch(loadSite)
-		console.log("by")
-		// this.setState({
-		// 	alert: {
-		// 		heading: "LOADING",
-		// 		body: IOMsg.LOADING_MSG,
-		// 		code: IOCode.OK,
-		// 		state: true
-		// 	}
-		// });
-		// axios({
-		// 	method: 'GET',
-		// 	url: AppConstants.baseUrl+'sites',
-		// 	headers: AppConstants.getAxiosHeader(),
-		// 	withCredentials: true
-		// }).then(res => {
-		// 	if (res.data.code === IOCode.OK){
-		// 		this.setState({
-		// 			sites: res.data.sites.items,
-		// 			alert: {
-		// 				heading: IOMsg.SUCCESS_HEAD,
-		// 				body: IOMsg.INIT_LOAD_MSG,
-		// 				code: IOCode.OK,
-		// 				state: false
-		// 			}
-		// 		});
-		// 	}else {
-		// 		this.setState({
-		// 			alert: {
-		// 				heading: IOMsg.ERROR_HEAD,
-		// 				body: res.data.msg,
-		// 				code: IOCode.ERROR,
-		// 				state: true
-		// 			}
-		// 		});
-		// 	}
-		// }).catch(err => {
-		// 	console.log(err);
-		// 	this.setState({
-		// 		alert: {
-		// 			heading: IOMsg.ERROR_HEAD,
-		// 			body: IOMsg.ERROR_BODY,
-		// 			code: IOCode.ERROR,
-		// 			state: true
-		// 		}
-		// 	});
-		// });
+		this.setState({
+			alert: {
+				heading: "LOADING",
+				body: IOMsg.LOADING_MSG,
+				code: IOCode.OK,
+				state: true
+			}
+		});
+		axios({
+			method: 'GET',
+			url: AppConstants.baseUrl+'sites',
+			headers: AppConstants.getAxiosHeader(),
+			withCredentials: true
+		}).then(res => {
+			if (res.data.code === IOCode.OK){
+				this.setState({
+					sites: res.data.sites.items,
+					alert: {
+						heading: IOMsg.SUCCESS_HEAD,
+						body: IOMsg.INIT_LOAD_MSG,
+						code: IOCode.OK,
+						state: false
+					}
+				});
+			}else {
+				this.setState({
+					alert: {
+						heading: IOMsg.ERROR_HEAD,
+						body: res.data.msg,
+						code: IOCode.ERROR,
+						state: true
+					}
+				});
+			}
+		}).catch(err => {
+			console.log(err);
+			this.setState({
+				alert: {
+					heading: IOMsg.ERROR_HEAD,
+					body: IOMsg.ERROR_BODY,
+					code: IOCode.ERROR,
+					state: true
+				}
+			});
+		});
 	}
 
 	onModelToggle = (state: boolean) => {
@@ -262,7 +252,3 @@ class Site extends React.Component<SiteProps> {
 		);
 	}
 }
-
-export default connect((state: RootState) => ({
-	siteReducer: state.siteReducer
-}))(Site);

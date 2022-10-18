@@ -10,8 +10,6 @@ import Home from "./components/Home/Home";
 import ProtectedRoutes from "./routes/ProtectedRoutes";
 import UnProtectedRoutes from "./routes/UnProtectedRoutes";
 import Error from "./components/Error/Error";
-import {ThunkDispatch} from "@reduxjs/toolkit";
-import {AppDispatch, RootState} from "../src/app/store";
 
 export default class App extends React.Component {
 	render(): React.ReactNode {
