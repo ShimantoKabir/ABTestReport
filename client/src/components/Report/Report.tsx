@@ -1,21 +1,24 @@
 import React from "react";
 import {Button, Container, Form} from "react-bootstrap";
 import axios from "axios";
-import {DeviceTypeToArray} from "../../types/DeviceType";
+import {DeviceType, DeviceTypeToArray} from "../../types/DeviceType";
 import AppAlert from "../Alert/AppAlert";
 import {IOCode} from "../../common/IOCode";
 import {IOMsg} from "../../common/IOMsg";
 import AppConstants from "../../common/AppConstants";
+import {SourceType, SourceTypeToArray} from "../../types/SourceType";
 
 export default class Report extends React.Component {
 	state = {
 		id: "",
 		startDate: "",
 		endDate: "",
-		deviceType: "",
+		deviceType: DeviceType.ALL,
+		sourceType: SourceType.ALL,
 		siteId: 0,
 		sites: [],
 		deviceTypes: DeviceTypeToArray(),
+		sourceTypes: SourceTypeToArray(),
 		alert: {
 			heading: "",
 			body: "",
@@ -95,6 +98,7 @@ export default class Report extends React.Component {
 					: this.state.startDate,
 				endDate: this.state.endDate ? this.getEndDate() : this.state.endDate,
 				deviceType: this.state.deviceType,
+				sourceType: this.state.sourceType,
 				siteId: this.state.siteId,
 			},
 		})
@@ -131,20 +135,24 @@ export default class Report extends React.Component {
 				body: "",
 				code: IOCode.EMPTY,
 				state: false,
+
 			},
 		});
 	};
 
 	getStartDate = (): string => {
 		const startDate = new Date(this.state.startDate);
-		startDate.setHours(startDate.getDay() - 1);
-		startDate.setHours(startDate.getHours() - 5);
+		startDate.setHours(startDate.getHours() + 5);
 		return startDate.toISOString();
 	};
 
 	getEndDate = (): string => {
 		const endDate = new Date(this.state.endDate);
-		endDate.setHours(endDate.getHours() + 18);
+		console.log(endDate.toISOString())
+		endDate.setHours(endDate.getDay() +27);
+		console.log(endDate.toISOString())
+		endDate.setHours(endDate.getHours() + 5);
+		console.log(endDate.toISOString())
 		return endDate.toISOString();
 	};
 
@@ -189,14 +197,28 @@ export default class Report extends React.Component {
 							placeholder="Password"
 						/>
 					</Form.Group>
-					<Form.Group className="mb-3" controlId="toolType">
+					<Form.Group className="mb-3" controlId="deviceType">
 						<Form.Label>Device Type</Form.Label>
 						<Form.Select
 							value={this.state.deviceType}
 							onChange={(e) => this.setState({deviceType: e.target.value})}
 						>
-							<option value={""}>--select--</option>
+							<option value={DeviceType.ALL}>--select--</option>
 							{this.state.deviceTypes.map((item) => (
+								<option key={item.key} value={item.value}>
+									{item.key}
+								</option>
+							))}
+						</Form.Select>
+					</Form.Group>
+					<Form.Group className="mb-3" controlId="sourceType">
+						<Form.Label>Source Type</Form.Label>
+						<Form.Select
+							value={this.state.sourceType}
+							onChange={(e) => this.setState({sourceType: e.target.value})}
+						>
+							<option value={SourceType.ALL}>--select--</option>
+							{this.state.sourceTypes.map((item) => (
 								<option key={item.key} value={item.value}>
 									{item.key}
 								</option>
