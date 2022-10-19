@@ -3,8 +3,7 @@ export enum DeviceType{
   TABLET = "tablet",
   MOBILE = "mobile",
   IPHONE = "iphone",
-  IPAD = "ipad",
-  ALL = "all"
+  IPAD = "ipad"
 }
 
 export function DeviceTypeToArray() {

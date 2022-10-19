@@ -7,6 +7,7 @@ import { OptimizelyDtoBuilder } from "../../../dto/builders/OptimizelyDtoBuilder
 import OptimizelyDtoBuilderImpl from "../../../dto/builders/implementations/OptimizelyDtoBuilderImpl";
 import { IOMsg } from "../../../common/IOMsg";
 import { DeviceType } from "../../../type/DeviceType";
+import { SourceType } from "../../../type/SourceType";
 
 @Injectable()
 export default class OptimizelyServiceImpl implements OptimizelyService {
@@ -108,6 +109,10 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
 
     if (experimentRequestModel.deviceType !== DeviceType.ALL) {
       url = url + `device=${experimentRequestModel.deviceType}&`;
+    }
+
+    if (experimentRequestModel.sourceType !== SourceType.ALL) {
+      url = url + `source=${experimentRequestModel.sourceType}`;
     }
 
     return url;

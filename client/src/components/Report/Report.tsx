@@ -1,4 +1,4 @@
-import React from "react";
+import React, {ChangeEvent} from "react";
 import {Button, Container, Form} from "react-bootstrap";
 import axios from "axios";
 import {DeviceTypeToArray} from "../../types/DeviceType";
@@ -6,16 +6,21 @@ import AppAlert from "../Alert/AppAlert";
 import {IOCode} from "../../common/IOCode";
 import {IOMsg} from "../../common/IOMsg";
 import AppConstants from "../../common/AppConstants";
+import {SourceTypeToArray} from "../../types/SourceType";
 
 export default class Report extends React.Component {
 	state = {
 		id: "",
 		startDate: "",
+		startTime: "",
 		endDate: "",
-		deviceType: "",
+		endTime: "",
+		deviceType: "all",
+		sourceType: "all",
 		siteId: 0,
 		sites: [],
 		deviceTypes: DeviceTypeToArray(),
+		sourceTypes: SourceTypeToArray(),
 		alert: {
 			heading: "",
 			body: "",
@@ -90,21 +95,19 @@ export default class Report extends React.Component {
 			withCredentials: true,
 			data: {
 				id: Number(this.state.id),
-				startDate: this.state.startDate
-					? this.getStartDate()
-					: this.state.startDate,
-				endDate: this.state.endDate ? this.getEndDate() : this.state.endDate,
+				startDate: this.getIsoDateTime(this.state.startDate,this.state.startTime),
+				endDate: this.getIsoDateTime(this.state.endDate,this.state.endTime),
 				deviceType: this.state.deviceType,
 				siteId: this.state.siteId,
+				sourceType: this.state.sourceType
 			},
 		})
 		.then((res) => {
 			this.setState({
 				alert: {
-					heading:
-						res.data.code === IOCode.OK
-							? IOMsg.SUCCESS_HEAD
-							: IOMsg.ERROR_HEAD,
+					heading: res.data.code === IOCode.OK
+						? IOMsg.SUCCESS_HEAD
+						: IOMsg.ERROR_HEAD,
 					body: res.data.msg,
 					code: res.data.code,
 					state: true,
@@ -124,6 +127,15 @@ export default class Report extends React.Component {
 		});
 	};
 
+	getIsoDateTime = (date: string, time: string) : string =>
+	{
+		let dateTimeIso = "";
+		if (date && time){
+			dateTimeIso = `${date}T${time}:00.000Z`
+		}
+		return dateTimeIso;
+	}
+
 	onAlertClose = () => {
 		this.setState({
 			alert: {
@@ -133,19 +145,6 @@ export default class Report extends React.Component {
 				state: false,
 			},
 		});
-	};
-
-	getStartDate = (): string => {
-		const startDate = new Date(this.state.startDate);
-		startDate.setHours(startDate.getDay() - 1);
-		startDate.setHours(startDate.getHours() - 5);
-		return startDate.toISOString();
-	};
-
-	getEndDate = (): string => {
-		const endDate = new Date(this.state.endDate);
-		endDate.setHours(endDate.getHours() + 18);
-		return endDate.toISOString();
 	};
 
 	render(): React.ReactNode {
@@ -172,21 +171,37 @@ export default class Report extends React.Component {
 						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="startDate">
-						<Form.Label>Start Date</Form.Label>
+						<Form.Label>Start DateTime</Form.Label>
 						<Form.Control
 							value={this.state.startDate}
 							onChange={(e) => this.setState({startDate: e.target.value})}
 							type="date"
-							placeholder="Enter username"
+						/>
+						<Form.Control
+							className="form-control-margin"
+							value={this.state.startTime}
+							onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
+								startTime: e.target.value
+							})}
+							type="time"
 						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="endDate">
-						<Form.Label>End Date</Form.Label>
+						<Form.Label>End DateTime</Form.Label>
 						<Form.Control
 							value={this.state.endDate}
-							onChange={(e) => this.setState({endDate: e.target.value})}
+							onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
+								endDate: e.target.value
+							})}
 							type="date"
-							placeholder="Password"
+						/>
+						<Form.Control
+							className="form-control-margin"
+							value={this.state.endTime}
+							onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
+								endTime: e.target.value
+							})}
+							type="time"
 						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="toolType">
@@ -195,7 +210,7 @@ export default class Report extends React.Component {
 							value={this.state.deviceType}
 							onChange={(e) => this.setState({deviceType: e.target.value})}
 						>
-							<option value={""}>--select--</option>
+							<option value={"all"}>ALL</option>
 							{this.state.deviceTypes.map((item) => (
 								<option key={item.key} value={item.value}>
 									{item.key}
@@ -203,7 +218,21 @@ export default class Report extends React.Component {
 							))}
 						</Form.Select>
 					</Form.Group>
-					<Form.Group className="mb-3" controlId="toolType">
+					<Form.Group className="mb-3" controlId="sourceType">
+						<Form.Label>Source Type</Form.Label>
+						<Form.Select
+							value={this.state.sourceType}
+							onChange={(e) => this.setState({sourceType: e.target.value})}
+						>
+							<option value={"all"}>ALL</option>
+							{this.state.sourceTypes.map((item) => (
+								<option key={item.key} value={item.value}>
+									{item.key}
+								</option>
+							))}
+						</Form.Select>
+					</Form.Group>
+					<Form.Group className="mb-3" controlId="siteId">
 						<Form.Label>Site</Form.Label>
 						<Form.Select
 							value={this.state.siteId}

@@ -12,6 +12,9 @@
 .form-container > h3{
     margin-bottom: 20px;
 }
+.form-control-margin{
+    margin-top: 10px;
+}
 .app-cursor{
     cursor: pointer;
 }

@@ -21,6 +21,10 @@ export default class ExperimentRequestModel{
   @IsNotEmpty()
   deviceType: string;
 
+  @IsString()
+  @IsNotEmpty()
+  sourceType: string;
+
   @IsNumber()
   @IsNotEmpty()
   siteId: number;
