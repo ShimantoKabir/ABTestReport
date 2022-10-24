@@ -1,6 +1,8 @@
 import { OptimizelyDtoBuilder } from "../OptimizelyDtoBuilder";
 import OptimizelyDto from "../../OptimizelyDto";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder{
 
   optimizelyDto: OptimizelyDto;
@@ -106,6 +108,26 @@ export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder{
 
   withVariationName(variationName: string): this {
     this.optimizelyDto.variationName = variationName;
+    return this;
+  }
+
+  withExperimentId(experimentId: number): this {
+    this.optimizelyDto.experimentId = experimentId;
+    return this;
+  }
+
+  withStartDate(startDate: string): this {
+    this.optimizelyDto.startDate = startDate;
+    return this;
+  }
+
+  withEndDate(endDate: string): this {
+    this.optimizelyDto.endDate = endDate;
+    return this;
+  }
+
+  withSiteName(siteName: string): this {
+    this.optimizelyDto.siteName = siteName;
     return this;
   }
 

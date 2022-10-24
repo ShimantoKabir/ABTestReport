@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Post } from "@nestjs/common";
 import { EIB, ExperimentInteractorBoundary } from "../../../usecase/boundaries/ExperimentInteractorBoundary";
 import ExperimentResponseModel from "../../../usecase/domain/ExperimentResponseModel";
 import ExperimentRequestModel from "../../../usecase/domain/ExperimentRequestModel";
@@ -18,4 +18,10 @@ export class ExperimentController {
   ): Promise<ExperimentResponseModel> {
     return await this.experimentInteractorBoundary.populateDataToSheet(experimentRequestModel);
   }
+
+  @Get("init")
+  async getInitData(): Promise<ExperimentResponseModel> {
+    return await this.experimentInteractorBoundary.getInitData();
+  }
+
 }

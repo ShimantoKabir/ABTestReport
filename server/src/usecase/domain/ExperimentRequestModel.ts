@@ -1,7 +1,8 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
+import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
 import VwoDto from "../../dto/VwoDto";
 import OptimizelyDto from "../../dto/OptimizelyDto";
 import AdobeTargetDto from "../../dto/AdobeTargetDto";
+import { Checkbox } from "../../dto/Checkbox";
 
 export default class ExperimentRequestModel{
 
@@ -17,13 +18,13 @@ export default class ExperimentRequestModel{
   @ValidateIf((object, value) => value)
   endDate?: string;
 
-  @IsString()
+  @IsArray()
   @IsNotEmpty()
-  deviceType: string;
+  deviceTypes: Checkbox[];
 
-  @IsString()
+  @IsArray()
   @IsNotEmpty()
-  sourceType: string;
+  sourceTypes: Checkbox[];
 
   @IsNumber()
   @IsNotEmpty()
@@ -35,5 +36,7 @@ export default class ExperimentRequestModel{
   sheetId?: string;
   sheetRange?: string;
   toolType?: number;
+  deviceType?: string;
+  sourceType?: string;
   dtoList?: OptimizelyDto[] | AdobeTargetDto[] | VwoDto[]
 }

@@ -20,6 +20,8 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
     let optimizelyDTOs: OptimizelyDto[] = [];
     let url = this.addQueryToUrl(experimentRequestModel);
 
+    console.log("url: ",url);
+
     try {
 
       const networkRes = await this.httpService.axiosRef.get(url, {
@@ -70,9 +72,15 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
             .withImprovementStatusFromBaseline(variation.lift.lift_status)
             .withImprovementValueFromBaseline(variation.lift.value)
             .withStatisticalSignificance(variation.lift.significance)
-            .isImprovementSignificant(variation.lift.is_significant)
-            .withConfidenceIntervalLow(variation.lift.confidence_interval[0])
-            .withConfidenceIntervalHigh(variation.lift.confidence_interval[1])
+            .isImprovementSignificant(variation.lift.is_significant);
+
+            if (variation.lift.confidence_interval){
+              optimizelyDtoBuilder
+              .withConfidenceIntervalLow(variation.lift.confidence_interval[0])
+              .withConfidenceIntervalHigh(variation.lift.confidence_interval[1])
+            }
+
+            optimizelyDtoBuilder
             .withSamplesRemainingToSignificance(variation.lift.visitors_remaining);
           } else {
             optimizelyDtoBuilder
@@ -107,11 +115,11 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
       url = url + `end_time=${experimentRequestModel.endDate}&`;
     }
 
-    if (experimentRequestModel.deviceType !== DeviceType.ALL) {
+    if (experimentRequestModel.deviceType) {
       url = url + `device=${experimentRequestModel.deviceType}&`;
     }
 
-    if (experimentRequestModel.sourceType !== SourceType.ALL) {
+    if (experimentRequestModel.sourceType) {
       url = url + `source=${experimentRequestModel.sourceType}`;
     }
 

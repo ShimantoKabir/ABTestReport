@@ -4,4 +4,5 @@ import ExperimentResponseModel from "../domain/ExperimentResponseModel";
 export const EIB = 'EIB';
 export interface ExperimentInteractorBoundary{
   populateDataToSheet(experimentRequestModel : ExperimentRequestModel) : Promise<ExperimentResponseModel>;
+  getInitData() : Promise<ExperimentResponseModel>;
 }

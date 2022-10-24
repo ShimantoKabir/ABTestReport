@@ -18,21 +18,34 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     @Inject(EP)
     private readonly experimentPresenter: ExperimentPresenter,
     @Inject(ARS)
-    private readonly optimizelyReportService : ABTestReportService<OptimizelyDto>,
+    private readonly optimizelyReportService: ABTestReportService<OptimizelyDto>,
     @Inject(SS)
     private readonly siteService: SiteService,
     @Inject(GSS)
     private readonly optimizelySheetService: GoogleSheetService<OptimizelyDto>
-  ) {}
+  ) {
+  }
+
+  async getInitData(): Promise<ExperimentResponseModel> {
+    const dto: OptimizelyDto = await this.optimizelySheetService.getInput();
+    const sites = await this.siteService.readAll({
+      limit: 10,
+      page: 1
+    });
+
+    const site = sites.items.find(obj=>obj.siteName.includes(dto.siteName));
+    dto.siteId = site.id;
+    return this.experimentPresenter.buildInitResponse(dto,sites);
+  }
 
   async populateDataToSheet(experimentRequestModel: ExperimentRequestModel): Promise<ExperimentResponseModel> {
 
     experimentRequestModel.msg = IOMsg.DATA_POPULATE_SUCCESSFULLY;
     experimentRequestModel.code = IOCode.OK;
 
-    const site = await this.siteService.readById(experimentRequestModel.siteId)
+    const site = await this.siteService.readById(experimentRequestModel.siteId);
 
-    if (!site){
+    if (!site) {
       experimentRequestModel.msg = IOMsg.NO_SITE;
       experimentRequestModel.code = IOCode.ERROR;
       return await this.experimentPresenter.buildResponse(experimentRequestModel);
@@ -41,26 +54,47 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     experimentRequestModel.apiKey = site.apiKey;
     experimentRequestModel.toolType = site.toolType;
 
-    if (site.toolType === ToolType.OPTIMIZELY){
-      experimentRequestModel.sheetRange = "OptimizelyReport!A:T";
-      experimentRequestModel.dtoList = await this.optimizelyReportService
-        .getReportData(experimentRequestModel) as OptimizelyDto[];
+    const totalReport = experimentRequestModel.deviceTypes.length +
+      experimentRequestModel.sourceTypes.length;
+    let totalGeneratedReport = 0
 
-      if (experimentRequestModel.dtoList.length === 0){
-        experimentRequestModel.msg = IOMsg.NO_DATA_API;
-        experimentRequestModel.code = IOCode.ERROR;
-        return await this.experimentPresenter.buildResponse(experimentRequestModel);
+    if (site.toolType === ToolType.OPTIMIZELY) {
+
+      let types = [
+        ...experimentRequestModel.deviceTypes,
+        ...experimentRequestModel.sourceTypes
+      ];
+
+      for (const obj of types) {
+        if (obj.isChecked){
+          if (obj.type === "device"){
+            experimentRequestModel.sourceType = "";
+            experimentRequestModel.deviceType = obj.value;
+          }else {
+            experimentRequestModel.deviceType = "";
+            experimentRequestModel.sourceType = obj.value;
+          }
+
+          experimentRequestModel.sheetRange = obj.key+"!A:T";
+          experimentRequestModel.dtoList = await this.optimizelyReportService
+            .getReportData(experimentRequestModel) as OptimizelyDto[];
+
+          if (experimentRequestModel.dtoList.length > 0) {
+            const isInsertOK = await this.optimizelySheetService
+              .insert(experimentRequestModel);
+          }
+        }
+        totalGeneratedReport++;
       }
 
-      const isInsertOK = await this.optimizelySheetService.insert(experimentRequestModel);
-
-      if (!isInsertOK){
+      if (totalReport !== totalGeneratedReport) {
         experimentRequestModel.msg = IOMsg.ERROR;
         experimentRequestModel.code = IOCode.ERROR;
-        return await this.experimentPresenter.buildResponse(experimentRequestModel);
+        return await this.experimentPresenter
+          .buildResponse(experimentRequestModel);
       }
 
-    }else {
+    } else {
       experimentRequestModel.msg = IOMsg.COMING_SOON;
       experimentRequestModel.code = IOCode.ERROR;
       return await this.experimentPresenter.buildResponse(experimentRequestModel);

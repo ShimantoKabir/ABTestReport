@@ -21,5 +21,9 @@ export interface OptimizelyDtoBuilder{
   withConfidenceIntervalLow(confidenceIntervalLow : number | string): this
   withConfidenceIntervalHigh(confidenceIntervalHigh : number | string): this
   withSamplesRemainingToSignificance(samplesRemainingToSignificance: number | string): this
+  withExperimentId(experimentId: number): this
+  withStartDate(startDate: string): this
+  withEndDate(endDate: string): this
+  withSiteName(siteName: string): this
   build() : OptimizelyDto
 }

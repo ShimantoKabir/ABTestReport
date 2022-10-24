@@ -9,18 +9,15 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  Query,
-  Req
+  Query
 } from "@nestjs/common";
 import { SIB, SiteInteractorBoundary } from "../../../usecase/boundaries/SiteInteractorBoundary";
-import { Request } from "express";
 import SiteRequestModel from "../../../usecase/domain/SiteRequestModel";
 import SiteResponseModel from "../../../usecase/domain/SiteResponseModel";
 import { IPaginationOptions, Pagination } from "nestjs-typeorm-paginate";
-import SiteEntity from "../../data/entities/SiteEntity";
 
 @Controller("sites")
-export class SiteController{
+export class SiteController {
 
   constructor(
     @Inject(SIB)
@@ -44,27 +41,27 @@ export class SiteController{
 
   @Get(":id")
   async getById(
-    @Param("id") id: number,
+    @Param("id") id: number
   ): Promise<SiteResponseModel> {
     return await this.siteInteractorBoundary.getById(id);
   }
 
   @Delete(":id")
   async removeById(
-    @Param("id") id: number,
+    @Param("id") id: number
   ): Promise<SiteResponseModel> {
     return await this.siteInteractorBoundary.removeById(id);
   }
 
   @Get()
   async getAll(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 5,
+    @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query("limit", new DefaultValuePipe(10), ParseIntPipe) limit: number = 5
   ): Promise<SiteResponseModel> {
-    const options : IPaginationOptions = {
+    const options: IPaginationOptions = {
       limit: limit,
       page: page
-    }
+    };
     return await this.siteInteractorBoundary.getAll(options);
   }
 

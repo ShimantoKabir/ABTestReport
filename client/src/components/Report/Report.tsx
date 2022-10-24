@@ -12,11 +12,7 @@ export default class Report extends React.Component {
 	state = {
 		id: "",
 		startDate: "",
-		startTime: "",
 		endDate: "",
-		endTime: "",
-		deviceType: "all",
-		sourceType: "all",
 		siteId: 0,
 		sites: [],
 		deviceTypes: DeviceTypeToArray(),
@@ -27,6 +23,7 @@ export default class Report extends React.Component {
 			code: IOCode.EMPTY,
 			state: true,
 		},
+		isFormValid: false
 	};
 
 	componentDidMount() {
@@ -40,34 +37,31 @@ export default class Report extends React.Component {
 		});
 		axios({
 			method: "GET",
-			url: AppConstants.baseUrl + "sites",
+			url: AppConstants.baseUrl + "experiment/init",
 			headers: AppConstants.getAxiosHeader(),
 			withCredentials: true,
 		})
 		.then((res) => {
 			if (res.data.code === IOCode.OK) {
+				const {input,sites} = res.data;
 				this.setState({
-					sites: res.data.sites.items,
-					alert: {
-						heading: IOMsg.SUCCESS_HEAD,
-						body: IOMsg.INIT_LOAD_MSG,
-						code: IOCode.OK,
-						state: false,
-					},
-				});
-			} else {
-				this.setState({
-					alert: {
-						heading: IOMsg.ERROR_HEAD,
-						body: res.data.msg,
-						code: IOCode.ERROR,
-						state: true,
-					},
-				});
+					id: input.experimentId,
+					startDate: this.formatDate(input.startDate),
+					endDate: this.formatDate(input.endDate),
+					sites: sites.items,
+					siteId: input.siteId
+				})
 			}
+			this.setState({
+				alert: {
+					heading: res.data.code === IOCode.OK ? IOMsg.SUCCESS_HEAD : IOMsg.ERROR_HEAD,
+					body: res.data.msg,
+					code: res.data.code,
+					state: res.data.code !== IOCode.OK
+				},
+			});
 		})
 		.catch((err) => {
-			console.log("err", err);
 			this.setState({
 				alert: {
 					heading: IOMsg.ERROR_HEAD,
@@ -79,59 +73,78 @@ export default class Report extends React.Component {
 		});
 	}
 
-	onSummit = () => {
+	formatDate = (date: string) : string =>{
+		let d = new Date(date);
+		return  d.getFullYear()
+			+ "-"
+			+ (d.getMonth()+1).toString().padStart(2,"0")
+			+ "-"
+			+ d.getDate().toString().padStart(2,"0");
+	}
+
+	onSummit = (e: any) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		const isValid = e.currentTarget.checkValidity();
+
 		this.setState({
-			alert: {
-				heading: IOMsg.LOADING_HEAD,
-				body: IOMsg.LOADING_MSG,
-				code: IOCode.OK,
-				state: true,
-			},
+			isFormValid: isValid
 		});
-		axios({
-			method: "POST",
-			url: AppConstants.baseUrl + "experiment/populate",
-			headers: AppConstants.getAxiosHeader(),
-			withCredentials: true,
-			data: {
-				id: Number(this.state.id),
-				startDate: this.getIsoDateTime(this.state.startDate,this.state.startTime),
-				endDate: this.getIsoDateTime(this.state.endDate,this.state.endTime),
-				deviceType: this.state.deviceType,
-				siteId: this.state.siteId,
-				sourceType: this.state.sourceType
-			},
-		})
-		.then((res) => {
+
+		if (isValid){
 			this.setState({
 				alert: {
-					heading: res.data.code === IOCode.OK
-						? IOMsg.SUCCESS_HEAD
-						: IOMsg.ERROR_HEAD,
-					body: res.data.msg,
-					code: res.data.code,
+					heading: IOMsg.LOADING_HEAD,
+					body: IOMsg.LOADING_MSG,
+					code: IOCode.OK,
 					state: true,
 				},
 			});
-		})
-		.catch((err) => {
-			console.log(err);
-			this.setState({
-				alert: {
-					heading: IOMsg.ERROR_HEAD,
-					body: err.response.data.message[0],
-					code: IOCode.ERROR,
-					state: true,
+			axios({
+				method: "POST",
+				url: AppConstants.baseUrl + "experiment/populate",
+				headers: AppConstants.getAxiosHeader(),
+				withCredentials: true,
+				data: {
+					id: Number(this.state.id),
+					startDate: this.getIsoDateTime(this.state.startDate),
+					endDate: this.getIsoDateTime(this.state.endDate),
+					deviceTypes: this.state.deviceTypes,
+					siteId: this.state.siteId,
+					sourceTypes: this.state.sourceTypes
 				},
+			})
+			.then((res) => {
+				this.setState({
+					alert: {
+						heading: res.data.code === IOCode.OK
+							? IOMsg.SUCCESS_HEAD
+							: IOMsg.ERROR_HEAD,
+						body: res.data.msg,
+						code: res.data.code,
+						state: true,
+					},
+				});
+			})
+			.catch((err) => {
+				console.log(err);
+				this.setState({
+					alert: {
+						heading: IOMsg.ERROR_HEAD,
+						body: err.response.data.message[0],
+						code: IOCode.ERROR,
+						state: true,
+					},
+				});
 			});
-		});
+		}
 	};
 
-	getIsoDateTime = (date: string, time: string) : string =>
-	{
+	getIsoDateTime = (date: string): string => {
 		let dateTimeIso = "";
-		if (date && time){
-			dateTimeIso = `${date}T${time}:00.000Z`
+		if (date) {
+			dateTimeIso = `${date}T00:00:00.000Z`
 		}
 		return dateTimeIso;
 	}
@@ -147,6 +160,18 @@ export default class Report extends React.Component {
 		});
 	};
 
+	onCheckboxClick = (e: ChangeEvent<HTMLInputElement>) => {
+		let types = e.target.name === "deviceType" ? this.state.deviceTypes : this.state.sourceTypes;
+		types.map(obj => {
+			if (obj.key === e.target.id) {
+				obj.isChecked = !obj.isChecked;
+			}
+		});
+		this.setState({
+			[e.target.name]: types
+		})
+	}
+
 	render(): React.ReactNode {
 		return (
 			<Container className="form-container form-container-margin">
@@ -158,7 +183,7 @@ export default class Report extends React.Component {
 					onAlertClose={this.onAlertClose}
 				/>
 				<h3>Populate Report To Sheet</h3>
-				<Form>
+				<Form noValidate validated={this.state.isFormValid} onSubmit={this.onSummit}>
 					<Form.Group className="mb-3" controlId="experimentId">
 						<Form.Label>Experiment Id</Form.Label>
 						<Form.Control
@@ -171,23 +196,15 @@ export default class Report extends React.Component {
 						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="startDate">
-						<Form.Label>Start DateTime</Form.Label>
+						<Form.Label>Start Date</Form.Label>
 						<Form.Control
 							value={this.state.startDate}
-							onChange={(e) => this.setState({startDate: e.target.value})}
+							onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({startDate: e.target.value})}
 							type="date"
-						/>
-						<Form.Control
-							className="form-control-margin"
-							value={this.state.startTime}
-							onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
-								startTime: e.target.value
-							})}
-							type="time"
 						/>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="endDate">
-						<Form.Label>End DateTime</Form.Label>
+						<Form.Label>End Date</Form.Label>
 						<Form.Control
 							value={this.state.endDate}
 							onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
@@ -195,42 +212,6 @@ export default class Report extends React.Component {
 							})}
 							type="date"
 						/>
-						<Form.Control
-							className="form-control-margin"
-							value={this.state.endTime}
-							onChange={(e: ChangeEvent<HTMLInputElement>) => this.setState({
-								endTime: e.target.value
-							})}
-							type="time"
-						/>
-					</Form.Group>
-					<Form.Group className="mb-3" controlId="toolType">
-						<Form.Label>Device Type</Form.Label>
-						<Form.Select
-							value={this.state.deviceType}
-							onChange={(e) => this.setState({deviceType: e.target.value})}
-						>
-							<option value={"all"}>ALL</option>
-							{this.state.deviceTypes.map((item) => (
-								<option key={item.key} value={item.value}>
-									{item.key}
-								</option>
-							))}
-						</Form.Select>
-					</Form.Group>
-					<Form.Group className="mb-3" controlId="sourceType">
-						<Form.Label>Source Type</Form.Label>
-						<Form.Select
-							value={this.state.sourceType}
-							onChange={(e) => this.setState({sourceType: e.target.value})}
-						>
-							<option value={"all"}>ALL</option>
-							{this.state.sourceTypes.map((item) => (
-								<option key={item.key} value={item.value}>
-									{item.key}
-								</option>
-							))}
-						</Form.Select>
 					</Form.Group>
 					<Form.Group className="mb-3" controlId="siteId">
 						<Form.Label>Site</Form.Label>
@@ -248,7 +229,41 @@ export default class Report extends React.Component {
 							))}
 						</Form.Select>
 					</Form.Group>
-					<Button onClick={() => this.onSummit()} variant="primary">
+					<Form.Group className="mb-3" controlId="toolType">
+						<Form.Label>Device Type</Form.Label>
+						<div className="mb-3">
+							{this.state.deviceTypes.map((item) => (
+								<Form.Check
+									inline
+									key={item.key}
+									label={item.key}
+									name="deviceType"
+									type="checkbox"
+									id={item.key}
+									checked={item.isChecked}
+									onChange={this.onCheckboxClick}
+								/>
+							))}
+						</div>
+					</Form.Group>
+					<Form.Group className="mb-3" controlId="sourceType">
+						<Form.Label>Source Type</Form.Label>
+						<div className="mb-3">
+							{this.state.sourceTypes.map((item) => (
+								<Form.Check
+									key={item.key}
+									inline
+									label={item.key}
+									name="sourceType"
+									type="checkbox"
+									id={item.key}
+									checked={item.isChecked}
+									onChange={this.onCheckboxClick}
+								/>
+							))}
+						</div>
+					</Form.Group>
+					<Button type="submit" variant="primary">
 						Populate
 					</Button>
 				</Form>

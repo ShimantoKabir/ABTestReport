@@ -18,6 +18,8 @@ import SiteEntity from "../../data/entities/SiteEntity";
 import { HttpModule } from "@nestjs/axios";
 import { GSS } from "../../sheet/GoogleSheetService";
 import { GoogleSheetServiceImpl } from "../../sheet/implementations/GoogleSheetServiceImpl";
+import { OD } from "../../../dto/OptimizelyDto";
+import OptimizelyDtoBuilderImpl from "../../../dto/builders/implementations/OptimizelyDtoBuilderImpl";
 
 @Module({
   imports : [
@@ -53,6 +55,10 @@ import { GoogleSheetServiceImpl } from "../../sheet/implementations/GoogleSheetS
     {
       provide: GSS,
       useClass: GoogleSheetServiceImpl
+    },
+    {
+      provide: OD,
+      useClass: OptimizelyDtoBuilderImpl
     }
   ],
 })

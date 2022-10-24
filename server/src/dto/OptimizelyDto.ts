@@ -1,5 +1,6 @@
+export const OD = "OD";
 export default class OptimizelyDto{
-  startTimeUTC : string;
+  startTimeUTC: string;
   endTimeUTC: string;
   variationName: string;
   variationId: number;
@@ -19,4 +20,9 @@ export default class OptimizelyDto{
   confidenceIntervalLow : number | string;
   confidenceIntervalHigh : number | string;
   samplesRemainingToSignificance: number | string;
+  experimentId: number;
+  startDate: string;
+  endDate: string;
+  siteName: string;
+  siteId: number;
 }

@@ -6,7 +6,7 @@ export default class SiteEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({unique: true})
+  @Column()
   siteName: string;
 
   @Column()
@@ -15,6 +15,6 @@ export default class SiteEntity {
   @Column()
   toolType: number;
 
-  @Column({unique: true})
+  @Column()
   apiKey: string;
 }
