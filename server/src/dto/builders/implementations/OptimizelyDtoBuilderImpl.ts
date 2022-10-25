@@ -121,7 +121,7 @@ export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder {
     return this;
   }
 
-  withStartDateOffset(offset: number): this {
+  withStartDateOffset(offset: string): this {
     this.optimizelyDto.startDateOffset = offset;
     return this;
   }
@@ -131,7 +131,7 @@ export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder {
     return this;
   }
 
-  withEndDateOffset(offset: number): this {
+  withEndDateOffset(offset: string): this {
     this.optimizelyDto.endDateOffset = offset;
     return this;
   }

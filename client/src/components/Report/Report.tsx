@@ -13,8 +13,8 @@ export default class Report extends React.Component {
 		id: "",
 		startDate: "",
 		endDate: "",
-		startDateOffset: 0,
-		endDateOffset: 0,
+		startDateOffset: "",
+		endDateOffset: "",
 		siteId: 0,
 		sites: [],
 		deviceTypes: DeviceTypeToArray(),
@@ -52,8 +52,8 @@ export default class Report extends React.Component {
 					endDate: this.formatDate(input.endDate),
 					sites: sites.items,
 					siteId: input.siteId,
-					startDateOffset: Number(input.startDateOffset),
-					endDateOffset: Number(input.endDateOffset)
+					startDateOffset: input.startDateOffset,
+					endDateOffset: input.endDateOffset
 				})
 			}
 			this.setState({
@@ -145,21 +145,14 @@ export default class Report extends React.Component {
 		}
 	};
 
-	getIsoDateTime = (dateString: string, offset: number): string => {
-		const date = new Date();
-		let utcHour = date.getUTCHours();
-		if (offset < 0){
-			utcHour = utcHour - offset;
-		}else {
-			utcHour = utcHour + offset;
-		}
-
-		const utcHourString = utcHour.toString().padStart(2,"0");
-		const utcMinutesString = date.getUTCMinutes().toString().padStart(2,"0");
-
+	getIsoDateTime = (dateString: string, offset: string): string => {
 		let dateTimeIso = "";
 		if (dateString) {
-			dateTimeIso = `${dateString}T${utcHourString}:${utcMinutesString}:00.000Z`
+			const date = new Date(dateString);
+			date.setHours(Number(offset));
+			const fDate = this.formatDate(date.toLocaleDateString());
+			const hours = date.getHours().toString().padStart(2,"0");
+			dateTimeIso = `${fDate}T${hours}:00:00.000Z`
 		}
 		return dateTimeIso;
 	}

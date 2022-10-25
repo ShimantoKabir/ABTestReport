@@ -22,9 +22,9 @@ export default class OptimizelyDto{
   samplesRemainingToSignificance: number | string;
   experimentId: number;
   startDate: string;
-  startDateOffset: number;
+  startDateOffset: string;
   endDate: string;
-  endDateOffset: number;
+  endDateOffset: string;
   siteName: string;
   siteId: number;
 }

@@ -11,7 +11,7 @@ async function bootstrap() {
   app.use(cookieParser());
   app.enableCors({
     origin: 'https://ab-test-report-client-production.up.railway.app',
-    // origin: 'http://localhost:3000',
+    //origin: 'http://localhost:3000',
     credentials:true,
   });
   // @ts-ignore
