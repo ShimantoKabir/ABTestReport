@@ -101,6 +101,8 @@ export class GoogleSheetServiceImpl<T extends OptimizelyDto | VwoDto | AdobeTarg
       this.optimizelyDtoBuilder.withExperimentId(data[0][1]);
       this.optimizelyDtoBuilder.withStartDate(data[1][1])
       this.optimizelyDtoBuilder.withEndDate(data[2][1])
+      this.optimizelyDtoBuilder.withStartDateOffset(data[3][1])
+      this.optimizelyDtoBuilder.withEndDateOffset(data[4][1])
       this.optimizelyDtoBuilder.withSiteName(data[5][1])
       return Promise.resolve(this.optimizelyDtoBuilder.build());
     }catch (e){

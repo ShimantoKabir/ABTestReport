@@ -23,7 +23,9 @@ export interface OptimizelyDtoBuilder{
   withSamplesRemainingToSignificance(samplesRemainingToSignificance: number | string): this
   withExperimentId(experimentId: number): this
   withStartDate(startDate: string): this
+  withStartDateOffset(offset: number): this
   withEndDate(endDate: string): this
+  withEndDateOffset(offset: number): this
   withSiteName(siteName: string): this
   build() : OptimizelyDto
 }

@@ -6,8 +6,6 @@ import { HttpService } from "@nestjs/axios";
 import { OptimizelyDtoBuilder } from "../../../dto/builders/OptimizelyDtoBuilder";
 import OptimizelyDtoBuilderImpl from "../../../dto/builders/implementations/OptimizelyDtoBuilderImpl";
 import { IOMsg } from "../../../common/IOMsg";
-import { DeviceType } from "../../../type/DeviceType";
-import { SourceType } from "../../../type/SourceType";
 
 @Injectable()
 export default class OptimizelyServiceImpl implements OptimizelyService {
@@ -78,6 +76,10 @@ export default class OptimizelyServiceImpl implements OptimizelyService {
               optimizelyDtoBuilder
               .withConfidenceIntervalLow(variation.lift.confidence_interval[0])
               .withConfidenceIntervalHigh(variation.lift.confidence_interval[1])
+            }else {
+              optimizelyDtoBuilder
+              .withConfidenceIntervalLow(IOMsg.NA)
+              .withConfidenceIntervalHigh(IOMsg.NA)
             }
 
             optimizelyDtoBuilder

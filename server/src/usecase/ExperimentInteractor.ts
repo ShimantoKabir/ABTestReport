@@ -54,8 +54,16 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     experimentRequestModel.apiKey = site.apiKey;
     experimentRequestModel.toolType = site.toolType;
 
+    experimentRequestModel.sourceTypes.push({
+      isChecked: true,
+      type: "all",
+      value: "",
+      key: "ALL"
+    });
+
     const totalReport = experimentRequestModel.deviceTypes.length +
-      experimentRequestModel.sourceTypes.length;
+      experimentRequestModel.sourceTypes.length ;
+
     let totalGeneratedReport = 0
 
     if (site.toolType === ToolType.OPTIMIZELY) {
@@ -67,7 +75,10 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
 
       for (const obj of types) {
         if (obj.isChecked){
-          if (obj.type === "device"){
+          if (obj.type === "all"){
+            experimentRequestModel.sourceType = "";
+            experimentRequestModel.deviceType = "";
+          }else if (obj.type === "device"){
             experimentRequestModel.sourceType = "";
             experimentRequestModel.deviceType = obj.value;
           }else {
@@ -83,8 +94,8 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
             const isInsertOK = await this.optimizelySheetService
               .insert(experimentRequestModel);
           }
+          totalGeneratedReport++;
         }
-        totalGeneratedReport++;
       }
 
       if (totalReport !== totalGeneratedReport) {

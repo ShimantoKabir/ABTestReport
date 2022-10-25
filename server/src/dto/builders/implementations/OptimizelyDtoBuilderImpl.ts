@@ -3,7 +3,7 @@ import OptimizelyDto from "../../OptimizelyDto";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder{
+export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder {
 
   optimizelyDto: OptimizelyDto;
 
@@ -121,8 +121,18 @@ export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder{
     return this;
   }
 
+  withStartDateOffset(offset: number): this {
+    this.optimizelyDto.startDateOffset = offset;
+    return this;
+  }
+
   withEndDate(endDate: string): this {
     this.optimizelyDto.endDate = endDate;
+    return this;
+  }
+
+  withEndDateOffset(offset: number): this {
+    this.optimizelyDto.endDateOffset = offset;
     return this;
   }
 
