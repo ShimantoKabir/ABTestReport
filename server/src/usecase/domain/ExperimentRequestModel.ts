@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
+import { IsArray, IsDateString, IsNotEmpty, IsNumber, ValidateIf } from "class-validator";
 import { VwoDto } from "../../dto/VwoDto";
 import { OptimizelyDto } from "../../dto/OptimizelyDto";
 import { AdobeTargetDto } from "../../dto/AdobeTargetDto";

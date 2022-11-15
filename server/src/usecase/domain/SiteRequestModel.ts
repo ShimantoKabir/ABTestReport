@@ -1,5 +1,4 @@
 import { IsBoolean, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
-import { Column } from "typeorm";
 
 export class SiteRequestModel {
 
@@ -25,7 +24,7 @@ export class SiteRequestModel {
 
   @IsString()
   @IsNotEmpty()
-  sheetUrl: string;
+  sheetId: string;
 
   @IsBoolean()
   @IsNotEmpty()

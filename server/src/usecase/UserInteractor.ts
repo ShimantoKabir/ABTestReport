@@ -14,6 +14,7 @@ import { AuthDto } from "../dto/AuthDto";
 import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { URMB, UserRequestModelBuilder } from "./domain/builders/UserRequestModelBuilder";
+import { AUS, AuthorizedUserService } from "../adapter/data/services/AuthorizedUserService";
 
 @Injectable()
 export class UserInteractor implements UserInteractorBoundary {
@@ -27,6 +28,8 @@ export class UserInteractor implements UserInteractorBoundary {
     private readonly authDtoBuilder: AuthDtoBuilder,
     @Inject(URMB)
     private readonly userRequestModelBuilder: UserRequestModelBuilder,
+    @Inject(AUS)
+    private readonly authorizedUserService: AuthorizedUserService,
     private jwtService: JwtService,
     private config: ConfigService
   ) {
@@ -61,6 +64,14 @@ export class UserInteractor implements UserInteractorBoundary {
     userRequestModel.code = IOCode.OK;
 
     try {
+
+      const authorizedUser = await this.authorizedUserService.readByEmail(userRequestModel.email);
+
+      if (!authorizedUser){
+        userRequestModel.msg = IOMsg.USER_UNAUTHORIZED;
+        userRequestModel.code = IOCode.ERROR;
+        return this.userPresenter.registrationResponse(userRequestModel);
+      }
 
       const user = await this.userService.getUserByEmail(userRequestModel.email);
 

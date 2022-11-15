@@ -18,10 +18,13 @@ import { URMB } from "../../../usecase/domain/builders/UserRequestModelBuilder";
 import {
   UserRequestModelBuilderImpl
 } from "../../../usecase/domain/builders/implementations/UserRequestModelBuilderImpl";
+import { AUS } from "../../data/services/AuthorizedUserService";
+import { AuthorizedUserServiceImpl } from "../../data/services/implementations/AuthorizedUserServiceImpl";
+import { AuthorizedUserEntity } from "../../data/entities/AuthorizedUserEntity";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, AuthorizedUserEntity]),
     JwtModule.register({}),
     PassportModule
   ],
@@ -46,6 +49,10 @@ import {
     {
       provide: URMB,
       useClass: UserRequestModelBuilderImpl
+    },
+    {
+      provide: AUS,
+      useClass: AuthorizedUserServiceImpl
     },
     AuthTokenStrategy,
     RefreshTokenStrategy

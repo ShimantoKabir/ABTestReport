@@ -1,3 +1,5 @@
+import { AuthorizedUserService } from "../adapter/data/services/AuthorizedUserService";
+
 export enum IOMsg{
   EMPTY = "",
   OK = "Operation successful!",
@@ -6,6 +8,7 @@ export enum IOMsg{
   DATA_POPULATE_SUCCESSFULLY = "Data populate successfully on spread sheet!",
   USER_EXIST = "User already exist!",
   USER_FOUND = "User found!",
+  USER_UNAUTHORIZED = "This email address is not authorized yet!",
   USER_NOT_FOUND = "User not found!",
   LOGIN_SUCCESS = "Login successful!",
   REGISTRATION_SUCCESS = "Registration successful!",

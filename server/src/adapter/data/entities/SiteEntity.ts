@@ -19,7 +19,7 @@ export class SiteEntity {
   apiKey: string;
 
   @Column()
-  sheetUrl: string;
+  sheetId: string;
 
   @Column()
   isActive: boolean;
