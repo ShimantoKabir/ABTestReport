@@ -4,15 +4,13 @@ import { ValidationPipe } from "@nestjs/common";
 import * as cookieParser from 'cookie-parser';
 
 const port = 3001;
-// credential added
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.enableCors({
-    origin: 'https://ab-test-report-client-production.up.railway.app',
-    //origin: 'http://localhost:3000',
-    credentials:true,
+    origin: 'http://localhost:3000',
   });
   // @ts-ignore
   await app.listen(process.env.PORT | port);

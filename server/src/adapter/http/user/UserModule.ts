@@ -12,6 +12,12 @@ import { UserServiceImpl } from "../../data/services/implementations/UserService
 import { PassportModule } from "@nestjs/passport";
 import { AuthTokenStrategy } from "../../security/strategies/AuthTokenStrategy";
 import { RefreshTokenStrategy } from "../../security/strategies/RefreshTokenStrategy";
+import { ADB } from "../../../dto/builders/AuthDtoBuilder";
+import { AuthDtoBuilderImpl } from "../../../dto/builders/implementations/AuthDtoBuilderImpl";
+import { URMB } from "../../../usecase/domain/builders/UserRequestModelBuilder";
+import {
+  UserRequestModelBuilderImpl
+} from "../../../usecase/domain/builders/implementations/UserRequestModelBuilderImpl";
 
 @Module({
   imports: [
@@ -33,9 +39,16 @@ import { RefreshTokenStrategy } from "../../security/strategies/RefreshTokenStra
       provide: US,
       useClass: UserServiceImpl
     },
+    {
+      provide: ADB,
+      useClass: AuthDtoBuilderImpl
+    },
+    {
+      provide: URMB,
+      useClass: UserRequestModelBuilderImpl
+    },
     AuthTokenStrategy,
     RefreshTokenStrategy
   ]
 })
-export class UserModule {
-}
+export class UserModule {}

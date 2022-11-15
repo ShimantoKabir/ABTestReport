@@ -1,20 +1,16 @@
-import { Body, Controller, Get, Inject, Param, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Req, UseGuards, Request } from "@nestjs/common";
 import { UIB, UserInteractorBoundary } from "../../../usecase/boundaries/UserInteractorBoundary";
-import { Request, Response } from "express";
 import { UserRequestModel } from "../../../usecase/domain/UserRequestModel";
 import { UserResponseModel } from "../../../usecase/domain/UserResponseModel";
-import { JwtService } from "@nestjs/jwt";
-import { IOCode } from "../../../common/IOCode";
-import { IOMsg } from "../../../common/IOMsg";
 import { Public } from "../../security/PublicEndPoint";
+import { RefreshTokenGuard } from "../../security/guards/RefreshTokenGuard";
 
 @Controller("user")
 export class UserController {
 
   constructor(
     @Inject(UIB)
-    private readonly userInteractorBoundary: UserInteractorBoundary,
-    private jwtService: JwtService
+    private readonly userInteractorBoundary: UserInteractorBoundary
   ) {
   }
 
@@ -31,33 +27,25 @@ export class UserController {
   async login(
     @Body() userRequestModel: UserRequestModel
   ): Promise<UserResponseModel> {
-
-    const userResponseModel = await this.userInteractorBoundary
-    .login(userRequestModel);
-
-    if (userResponseModel.code === IOCode.OK) {
-      const jwt = await this.jwtService.signAsync({
-        email: userResponseModel.email
-      });
-      userResponseModel.setJwtToken(jwt);
-    }
-
-    return userResponseModel;
+    return await this.userInteractorBoundary.login(userRequestModel);
   }
 
   @Get(":email")
   async find(
-    @Param("email") email: string,
-    @Req() request: Request
+    @Param("email") email: string
   ): Promise<UserResponseModel> {
     return await this.userInteractorBoundary.findByEmail(email);
   }
 
   @Post("logout")
-  async logout(@Res({ passthrough: true }) response: Response) {
-    return {
-      msg: IOMsg.LOGOUT,
-      code: IOCode.OK
-    };
+  async logout(@Body() userRequestModel: UserRequestModel) {
+    return userRequestModel;
+  }
+
+  @Public()
+  @UseGuards(RefreshTokenGuard)
+  @Post("refresh")
+  async refresh(@Request() req): Promise<UserResponseModel> {
+    return await this.userInteractorBoundary.refresh(req.user.sub,req.user.email);
   }
 }

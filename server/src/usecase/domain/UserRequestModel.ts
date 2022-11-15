@@ -2,7 +2,7 @@ import {IsEmail, IsNotEmpty} from "class-validator";
 
 export class UserRequestModel{
 
-  id: string;
+  id: number;
 
   @IsNotEmpty()
   @IsEmail()

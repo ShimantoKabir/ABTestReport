@@ -6,4 +6,5 @@ export interface UserInteractorBoundary{
   register(userRequestModel : UserRequestModel) : Promise<UserResponseModel>;
   login(userRequestModel : UserRequestModel) : Promise<UserResponseModel>;
   findByEmail(email : string) : Promise<UserResponseModel>;
+  refresh(id: number, email: string) : Promise<UserResponseModel>
 }
