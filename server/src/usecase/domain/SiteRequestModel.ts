@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
 
-export default class SiteRequestModel {
+export class SiteRequestModel {
 
   @IsNumber()
   @ValidateIf((object, value) => value !== null)

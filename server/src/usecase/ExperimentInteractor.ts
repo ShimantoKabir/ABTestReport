@@ -1,12 +1,12 @@
 import { ExperimentInteractorBoundary } from "./boundaries/ExperimentInteractorBoundary";
 import { Inject, Injectable } from "@nestjs/common";
-import ExperimentRequestModel from "./domain/ExperimentRequestModel";
-import ExperimentResponseModel from "./domain/ExperimentResponseModel";
+import { ExperimentRequestModel } from "./domain/ExperimentRequestModel";
+import { ExperimentResponseModel } from "./domain/ExperimentResponseModel";
 import { EP, ExperimentPresenter } from "./presenters/ExperimentPresenter";
 import { IOMsg } from "../common/IOMsg";
 import { IOCode } from "../common/IOCode";
 import { ABTestReportService, ARS } from "../adapter/report/ABTestReportService";
-import OptimizelyDto from "../dto/OptimizelyDto";
+import { OptimizelyDto } from "../dto/OptimizelyDto";
 import { SiteService, SS } from "../adapter/data/services/SiteService";
 import { ToolType } from "../type/ToolType";
 import { GoogleSheetService, GSS } from "../adapter/sheet/GoogleSheetService";

@@ -1,7 +1,7 @@
-import SiteEntity from "../../adapter/data/entities/SiteEntity";
-import SiteResponseModel from "../domain/SiteResponseModel";
+import { SiteEntity } from "../../adapter/data/entities/SiteEntity";
+import { SiteResponseModel } from "../domain/SiteResponseModel";
 import { Pagination } from "nestjs-typeorm-paginate";
-import SiteRequestModel from "../domain/SiteRequestModel";
+import { SiteRequestModel } from "../domain/SiteRequestModel";
 
 export const SP = "SP";
 export interface SitePresenter{

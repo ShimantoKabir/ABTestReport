@@ -1,7 +1,7 @@
-import UserEntity from "../entities/UserEntity";
+import { UserEntity } from "../entities/UserEntity";
 
 export const US = "US";
 export interface UserService{
-  getUserByUsername(username: string) : Promise<UserEntity>
+  getUserByEmail(email: string) : Promise<UserEntity>
   save(userEntity: UserEntity) : Promise<UserEntity>
 }

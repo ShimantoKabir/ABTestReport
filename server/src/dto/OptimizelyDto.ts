@@ -1,5 +1,5 @@
 export const OD = "OD";
-export default class OptimizelyDto{
+export class OptimizelyDto{
   startTimeUTC: string;
   endTimeUTC: string;
   variationName: string;

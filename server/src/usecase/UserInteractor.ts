@@ -1,17 +1,17 @@
 import { UserInteractorBoundary } from "./boundaries/UserInteractorBoundary";
-import UserRequestModel from "./domain/UserRequestModel";
-import UserResponseModel from "./domain/UserResponseModel";
+import { UserRequestModel } from "./domain/UserRequestModel";
+import { UserResponseModel } from "./domain/UserResponseModel";
 import { IOMsg } from "../common/IOMsg";
 import { IOCode } from "../common/IOCode";
 import { Inject, Injectable } from "@nestjs/common";
 import { UP, UserPresenter } from "./presenters/UserPresenter";
-import UserEntity from "../adapter/data/entities/UserEntity";
+import { UserEntity } from "../adapter/data/entities/UserEntity";
 import * as bcrypt from "bcrypt";
-import AppConstants from "../common/AppConstants";
+import { AppConstants } from "../common/AppConstants";
 import { US, UserService } from "../adapter/data/services/UserService";
 
 @Injectable()
-export default class UserInteractor implements UserInteractorBoundary {
+export class UserInteractor implements UserInteractorBoundary {
 
   constructor(
     @Inject(US)
@@ -26,7 +26,7 @@ export default class UserInteractor implements UserInteractorBoundary {
     userRequestModel.msg = IOMsg.LOGIN_SUCCESS;
     userRequestModel.code = IOCode.OK;
 
-    const user = await this.userService.getUserByUsername(userRequestModel.username);
+    const user = await this.userService.getUserByEmail(userRequestModel.email);
 
     if (!user) {
       userRequestModel.msg = IOMsg.LOGIN_UNSUCCESSFUL;
@@ -52,7 +52,7 @@ export default class UserInteractor implements UserInteractorBoundary {
 
     try {
 
-      const user = await this.userService.getUserByUsername(userRequestModel.username);
+      const user = await this.userService.getUserByEmail(userRequestModel.email);
 
       if (user) {
         userRequestModel.msg = IOMsg.USER_EXIST;
@@ -67,7 +67,7 @@ export default class UserInteractor implements UserInteractorBoundary {
 
       const userEntity: UserEntity = {
         password: password,
-        username: userRequestModel.username
+        email: userRequestModel.email
       };
 
       const res = await this.userService.save(userEntity);
@@ -88,8 +88,8 @@ export default class UserInteractor implements UserInteractorBoundary {
     }
   }
 
-  async findByUsername(username: string): Promise<UserResponseModel> {
-    const user: UserEntity = await this.userService.getUserByUsername(username);
-    return this.userPresenter.findResponse(user ? user.username : null);
+  async findByEmail(email: string): Promise<UserResponseModel> {
+    const user: UserEntity = await this.userService.getUserByEmail(email);
+    return this.userPresenter.findResponse(user ? user.email : null);
   }
 }

@@ -1,15 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { UserPresenter } from "../presenters/UserPresenter";
-import UserRequestModel from "./UserRequestModel";
+import { UserRequestModel } from "./UserRequestModel";
 import { IOMsg } from "../../common/IOMsg";
 import { IOCode } from "../../common/IOCode";
 
 @Injectable()
-export default class UserResponseModel implements UserPresenter{
+export class UserResponseModel implements UserPresenter{
 
   code: number;
   msg: string;
-  username: string;
+  email: string;
   jwtToken: string;
 
   async registrationResponse(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
@@ -21,18 +21,18 @@ export default class UserResponseModel implements UserPresenter{
   async loginResponse(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
     this.msg = userRequestModel.msg;
     this.code = userRequestModel.code;
-    this.username = userRequestModel.username;
+    this.email = userRequestModel.email;
     return this;
   }
 
-  async findResponse(username?: string): Promise<UserResponseModel> {
+  async findResponse(email?: string): Promise<UserResponseModel> {
     this.msg = IOMsg.USER_NOT_FOUND;
     this.code = IOCode.ERROR;
 
-    if (username){
+    if (email){
       this.msg = IOMsg.USER_FOUND;
       this.code = IOCode.OK
-      this.username = username;
+      this.email = email;
     }
     return this;
   }

@@ -1,14 +1,14 @@
 import { ExperimentPresenter } from "../presenters/ExperimentPresenter";
-import ExperimentRequestModel from "./ExperimentRequestModel";
+import { ExperimentRequestModel } from "./ExperimentRequestModel";
 import { Injectable } from "@nestjs/common";
-import OptimizelyDto from "../../dto/OptimizelyDto";
+import { OptimizelyDto } from "../../dto/OptimizelyDto";
 import { Pagination } from "nestjs-typeorm-paginate";
-import SiteEntity from "../../adapter/data/entities/SiteEntity";
+import { SiteEntity } from "../../adapter/data/entities/SiteEntity";
 import { IOCode } from "../../common/IOCode";
 import { IOMsg } from "../../common/IOMsg";
 
 @Injectable()
-export default class ExperimentResponseModel implements ExperimentPresenter {
+export class ExperimentResponseModel implements ExperimentPresenter {
 
   code: number;
   msg: string;

@@ -1,11 +1,12 @@
-import { IsDateString, IsNotEmpty, IsNumber } from "class-validator";
+import {IsEmail, IsNotEmpty} from "class-validator";
 
-export default class UserRequestModel{
+export class UserRequestModel{
 
   id: string;
 
   @IsNotEmpty()
-  username: string;
+  @IsEmail()
+  email: string;
 
   @IsNotEmpty()
   password: string;

@@ -1,15 +1,16 @@
 import { GoogleSheetService, GSS } from "../GoogleSheetService";
-import OptimizelyDto, { OD } from "../../../dto/OptimizelyDto";
-import VwoDto from "../../../dto/VwoDto";
-import AdobeTargetDto from "../../../dto/AdobeTargetDto";
-import ExperimentRequestModel from "../../../usecase/domain/ExperimentRequestModel";
+import { OD, OptimizelyDto } from "../../../dto/OptimizelyDto";
+import { VwoDto } from "../../../dto/VwoDto";
+import { AdobeTargetDto } from "../../../dto/AdobeTargetDto";
+import { ExperimentRequestModel } from "../../../usecase/domain/ExperimentRequestModel";
 import { Inject, Injectable } from "@nestjs/common";
 import { google } from "googleapis";
-import AppConstants from "../../../common/AppConstants";
+import { AppConstants } from "../../../common/AppConstants";
 import { OptimizelyDtoBuilder } from "../../../dto/builders/OptimizelyDtoBuilder";
 
 @Injectable()
-export class GoogleSheetServiceImpl<T extends OptimizelyDto | VwoDto | AdobeTargetDto> implements GoogleSheetService<T> {
+export class GoogleSheetServiceImpl<T extends OptimizelyDto | VwoDto | AdobeTargetDto>
+  implements GoogleSheetService<T> {
 
   constructor(
     @Inject(OD)

@@ -1,11 +1,11 @@
 import { SitePresenter } from "../presenters/SitePresenter";
-import SiteEntity from "../../adapter/data/entities/SiteEntity";
+import { SiteEntity } from "../../adapter/data/entities/SiteEntity";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { IOCode } from "../../common/IOCode";
 import { IOMsg } from "../../common/IOMsg";
-import SiteRequestModel from "./SiteRequestModel";
+import { SiteRequestModel } from "./SiteRequestModel";
 
-export default class SiteResponseModel implements SitePresenter {
+export class SiteResponseModel implements SitePresenter {
 
   code: number;
   msg: string;

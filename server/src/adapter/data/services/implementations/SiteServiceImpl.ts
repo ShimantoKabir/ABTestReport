@@ -2,13 +2,13 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Equal, Repository } from "typeorm";
 import { SiteService } from "../SiteService";
-import SiteEntity from "../../entities/SiteEntity";
+import { SiteEntity } from "../../entities/SiteEntity";
 import { IPaginationOptions, paginate, Pagination } from "nestjs-typeorm-paginate";
 import { UpdateResult } from "typeorm/query-builder/result/UpdateResult";
-import SiteRequestModel from "../../../../usecase/domain/SiteRequestModel";
+import { SiteRequestModel } from "../../../../usecase/domain/SiteRequestModel";
 
 @Injectable()
-export default class SiteServiceImpl implements SiteService {
+export class SiteServiceImpl implements SiteService {
 
   constructor(
     @InjectRepository(SiteEntity)

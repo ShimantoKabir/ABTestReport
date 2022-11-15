@@ -1,10 +1,10 @@
 import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
-import VwoDto from "../../dto/VwoDto";
-import OptimizelyDto from "../../dto/OptimizelyDto";
-import AdobeTargetDto from "../../dto/AdobeTargetDto";
+import { VwoDto } from "../../dto/VwoDto";
+import { OptimizelyDto } from "../../dto/OptimizelyDto";
+import { AdobeTargetDto } from "../../dto/AdobeTargetDto";
 import { Checkbox } from "../../dto/Checkbox";
 
-export default class ExperimentRequestModel{
+export class ExperimentRequestModel{
 
   @IsNumber()
   @ValidateIf((object, value) => value !== null)

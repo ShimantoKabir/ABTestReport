@@ -1,7 +1,7 @@
-import SiteEntity from "../entities/SiteEntity";
+import { SiteEntity } from "../entities/SiteEntity";
 import { IPaginationOptions, Pagination } from "nestjs-typeorm-paginate";
 import { UpdateResult } from "typeorm/query-builder/result/UpdateResult";
-import SiteRequestModel from "../../../usecase/domain/SiteRequestModel";
+import { SiteRequestModel } from "../../../usecase/domain/SiteRequestModel";
 
 export const SS = "SS";
 export interface SiteService {

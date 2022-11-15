@@ -1,5 +1,5 @@
-import UserRequestModel from "../domain/UserRequestModel";
-import UserResponseModel from "../domain/UserResponseModel";
+import { UserRequestModel } from "../domain/UserRequestModel";
+import { UserResponseModel } from "../domain/UserResponseModel";
 
 export interface UserPresenter{
   registrationResponse(userRequestModel : UserRequestModel) : Promise<UserResponseModel>

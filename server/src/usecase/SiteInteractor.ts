@@ -1,15 +1,15 @@
 import { SiteInteractorBoundary } from "./boundaries/SiteInteractorBoundary";
 import { IPaginationOptions, Pagination } from "nestjs-typeorm-paginate";
-import SiteEntity from "../adapter/data/entities/SiteEntity";
-import SiteResponseModel from "./domain/SiteResponseModel";
-import SiteRequestModel from "./domain/SiteRequestModel";
+import { SiteEntity } from "../adapter/data/entities/SiteEntity";
+import { SiteResponseModel } from "./domain/SiteResponseModel";
+import { SiteRequestModel } from "./domain/SiteRequestModel";
 import { Inject, Injectable } from "@nestjs/common";
 import { SiteService, SS } from "../adapter/data/services/SiteService";
 import { SitePresenter, SP } from "./presenters/SitePresenter";
 import { IOMsg } from "../common/IOMsg";
 
 @Injectable()
-export default class SiteInteractor implements SiteInteractorBoundary{
+export class SiteInteractor implements SiteInteractorBoundary{
 
   constructor(
     @Inject(SS)

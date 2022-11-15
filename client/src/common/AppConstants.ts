@@ -12,6 +12,8 @@ export default class AppConstants {
 	};
 	public static loggedInCookieName = "isLoggedIn";
 	public static jwtCookieName = "jwt";
+	public static authTokenCookieName = "authToken";
+	public static refreshTokenCookieName = "refreshToken";
 }
 
 function GetJwtToken(): string {

@@ -1,3 +1,3 @@
-export default class VwoDto{
+export class VwoDto{
 
 }

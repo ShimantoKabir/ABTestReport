@@ -1,5 +1,5 @@
-import SiteRequestModel from "../domain/SiteRequestModel";
-import SiteResponseModel from "../domain/SiteResponseModel";
+import { SiteRequestModel } from "../domain/SiteRequestModel";
+import { SiteResponseModel } from "../domain/SiteResponseModel";
 import { IPaginationOptions } from "nestjs-typeorm-paginate";
 
 export const SIB = "SIB";

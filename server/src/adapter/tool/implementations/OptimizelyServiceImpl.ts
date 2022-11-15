@@ -1,16 +1,19 @@
 import { OptimizelyService } from "../OptimizelyService";
-import ExperimentRequestModel from "../../../usecase/domain/ExperimentRequestModel";
-import OptimizelyDto from "../../../dto/OptimizelyDto";
+import { ExperimentRequestModel } from "../../../usecase/domain/ExperimentRequestModel";
+import { OptimizelyDto } from "../../../dto/OptimizelyDto";
 import { Injectable } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { OptimizelyDtoBuilder } from "../../../dto/builders/OptimizelyDtoBuilder";
-import OptimizelyDtoBuilderImpl from "../../../dto/builders/implementations/OptimizelyDtoBuilderImpl";
+import {
+  OptimizelyDtoBuilderImpl
+} from "../../../dto/builders/implementations/OptimizelyDtoBuilderImpl";
 import { IOMsg } from "../../../common/IOMsg";
 
 @Injectable()
-export default class OptimizelyServiceImpl implements OptimizelyService {
+export class OptimizelyServiceImpl implements OptimizelyService {
 
-  constructor(private readonly httpService: HttpService) {
+  constructor(
+    private readonly httpService: HttpService) {
   }
 
   async getResultByNetworkCall(experimentRequestModel: ExperimentRequestModel): Promise<OptimizelyDto[]> {
