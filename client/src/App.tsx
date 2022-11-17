@@ -24,14 +24,14 @@ export default class App extends React.Component {
 					<ProtectedComponent/>
 					<Routes>
 						<Route element={<ProtectedRoutes/>}>
-							<Route path="/" element={<HomeComponent/>}/>
+							<Route path="/home" element={<HomeComponent/>}/>
 							<Route path="/site" element={<SiteComponent/>}/>
 							<Route path="/report" element={<ReportComponent/>}/>
 							<Route path="/*" element={<ErrorComponent/>} />
 						</Route>
 						<Route element={<UnProtectedRoutes/>}>
 							<Route path="/registration" element={<RegistrationComponent/>}/>
-							<Route path="/login" element={<LoginComponent/>}/>
+							<Route path="/" element={<LoginComponent/>}/>
 							<Route path="/*" element={<ErrorComponent/>} />
 						</Route>
 					</Routes>

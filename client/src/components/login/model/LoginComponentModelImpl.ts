@@ -7,10 +7,9 @@ import {IOCode} from "../../../common/IOCode";
 import {IOMsg} from "../../../common/IOMsg";
 import {UserDto} from "../../../dtos/UserDto";
 import {UDB, UserDtoBuilder} from "../../../dtos/builders/UserDtoBuilder";
-import AppConstants from "../../../common/AppConstants";
-import {Cookies} from "react-cookie";
 import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
-import {US, UserService} from "../../../services/UserService";
+import {US, UserService} from "../../../services/domain/UserService";
+import {AppUtils} from "../../../common/AppUtils";
 
 @injectable()
 export class LoginComponentModelImpl implements LoginComponentModel {
@@ -53,7 +52,7 @@ export class LoginComponentModelImpl implements LoginComponentModel {
 		const isOk = userDtoRes.code === IOCode.OK;
 
 		if (isOk){
-			this.setCookies(userDtoRes);
+			AppUtils.setCookies(userDtoRes);
 			this.isLoggedIn = true;
 		}
 
@@ -64,31 +63,6 @@ export class LoginComponentModelImpl implements LoginComponentModel {
 		.build();
 
 		return Promise.resolve(alertDto);
-	}
-
-	setCookies(userDto: UserDto){
-		let cookies = new Cookies();
-		cookies.set(
-			AppConstants.loggedInCookieName,
-			true,
-			{
-				path: '/'
-			}
-		);
-		cookies.set(
-			AppConstants.authTokenCookieName,
-			userDto.authToken,
-			{
-				path: '/',
-			}
-		);
-		cookies.set(
-			AppConstants.refreshTokenCookieName,
-			userDto.refreshToken,
-			{
-				path: '/'
-			}
-		);
 	}
 
 	onInputChange(e: ChangeEvent<HTMLInputElement>): void {

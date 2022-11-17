@@ -1,6 +1,6 @@
 import React, {ChangeEvent, FormEvent} from "react";
 import {Button, Container, Form} from "react-bootstrap";
-import {Navigate} from "react-router-dom";
+import {Link, Navigate} from "react-router-dom";
 import {observer} from "mobx-react";
 import {resolve} from "inversify-react";
 import {LCM, LoginComponentModel} from "./model/LoginComponentModel";
@@ -77,6 +77,9 @@ export class LoginComponent extends React.Component {
 							Submit
 						</Button>
 					</Form>
+					<div className="divider pt-4 text-center" >
+						<p>Don't have account, please <Link to={"/registration"}>SingUp</Link></p>
+					</div>
 				</Container>
 			</main>
 		);

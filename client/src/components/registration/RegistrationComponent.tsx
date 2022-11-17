@@ -4,6 +4,7 @@ import {observer} from "mobx-react";
 import {resolve} from "inversify-react";
 import {RCM, RegistrationComponentModel} from "./model/RegistrationComponentModel";
 import {ACM, AlertComponentModel} from "../alert/model/AlertComponentModel";
+import {Link} from "react-router-dom";
 
 @observer
 export class RegistrationComponent extends React.Component{
@@ -64,6 +65,9 @@ export class RegistrationComponent extends React.Component{
 							Submit
 						</Button>
 					</Form>
+					<div className="divider pt-4 text-center" >
+						<p>Already have account, please <Link to="/">Login</Link></p>
+					</div>
 				</Container>
 			</main>
 		);

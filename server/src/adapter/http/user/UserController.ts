@@ -5,7 +5,7 @@ import { UserResponseModel } from "../../../usecase/domain/UserResponseModel";
 import { Public } from "../../security/PublicEndPoint";
 import { RefreshTokenGuard } from "../../security/guards/RefreshTokenGuard";
 
-@Controller("user")
+@Controller("users")
 export class UserController {
 
   constructor(

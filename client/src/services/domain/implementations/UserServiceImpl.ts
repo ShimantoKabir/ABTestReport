@@ -1,14 +1,14 @@
 import { UserService} from "../UserService";
 import {inject, injectable} from "inversify";
 import axios, {AxiosError} from "axios";
-import {UDB, UserDtoBuilder} from "../../dtos/builders/UserDtoBuilder";
-import {ADB, AlertDtoBuilder} from "../../dtos/builders/AlertDtoBuilder";
-import {UserDto} from "../../dtos/UserDto";
-import {AlertDto} from "../../dtos/AlertDto";
-import {ResponseDto} from "../../dtos/ResponseDto";
-import AppConstants from "../../common/AppConstants";
-import {IOCode} from "../../common/IOCode";
-import {IOMsg} from "../../common/IOMsg";
+import {UDB, UserDtoBuilder} from "../../../dtos/builders/UserDtoBuilder";
+import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
+import {UserDto} from "../../../dtos/UserDto";
+import {AlertDto} from "../../../dtos/AlertDto";
+import {ResponseDto} from "../../../dtos/ResponseDto";
+import AppConstants from "../../../common/AppConstants";
+import {IOCode} from "../../../common/IOCode";
+import {IOMsg} from "../../../common/IOMsg";
 
 @injectable()
 export class UserServiceImpl implements UserService{
@@ -49,7 +49,7 @@ export class UserServiceImpl implements UserService{
 	async login(userDto: UserDto): Promise<UserDto> {
 
 		try {
-			const res = await axios.post<ResponseDto>(AppConstants.baseUrl+"auth/login", {
+			const res = await axios.post<ResponseDto>(AppConstants.baseUrl+"users/login", {
 				email: userDto.email,
 				password: userDto.password
 			});

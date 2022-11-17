@@ -1,5 +1,5 @@
-import {UserDto} from "../dtos/UserDto";
-import {AlertDto} from "../dtos/AlertDto";
+import {UserDto} from "../../dtos/UserDto";
+import {AlertDto} from "../../dtos/AlertDto";
 
 export const US = "US";
 export interface UserService{

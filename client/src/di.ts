@@ -11,8 +11,12 @@ import {PCM, ProtectedComponentModel} from "./security/model/ProtectedComponentM
 import {ProtectedComponentModelImpl} from "./security/model/ProtectedComponentModelImpl";
 import {RCM, RegistrationComponentModel} from "./components/registration/model/RegistrationComponentModel";
 import {RegistrationComponentModelImpl} from "./components/registration/model/RegistrationComponentModelImpl";
-import {US, UserService} from "./services/UserService";
-import {UserServiceImpl} from "./services/implementations/UserServiceImpl";
+import {US, UserService} from "./services/domain/UserService";
+import {UserServiceImpl} from "./services/domain/implementations/UserServiceImpl";
+import {HS, HttpService} from "./services/http/HttpService";
+import {HttpServiceImpl} from "./services/http/HttpServiceImpl";
+import {SCM, SiteComponentModel} from "./components/site/model/SiteComponentModel";
+import {SiteComponentModelImpl} from "./components/site/model/SiteComponentModelImpl";
 
 const container = new Container();
 container.bind<LoginComponentModel>(LCM).to(LoginComponentModelImpl);
@@ -22,5 +26,7 @@ container.bind<RegistrationComponentModel>(RCM).to(RegistrationComponentModelImp
 container.bind<UserService>(US).to(UserServiceImpl);
 container.bind<UserDtoBuilder>(UDB).to(UserDtoBuilderImpl);
 container.bind<AlertDtoBuilder>(ADB).to(AlertDtoBuilderImpl);
+container.bind<HttpService>(HS).to(HttpServiceImpl);
+container.bind<SiteComponentModel>(SCM).to(SiteComponentModelImpl);
 
 export const DiContainer = container;

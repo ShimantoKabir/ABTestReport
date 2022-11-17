@@ -5,7 +5,7 @@ import {inject, injectable} from "inversify";
 import {AlertDto} from "../../../dtos/AlertDto";
 import {UDB, UserDtoBuilder} from "../../../dtos/builders/UserDtoBuilder";
 import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
-import {US, UserService} from "../../../services/UserService";
+import {US, UserService} from "../../../services/domain/UserService";
 
 @injectable()
 export class RegistrationComponentModelImpl implements RegistrationComponentModel{
