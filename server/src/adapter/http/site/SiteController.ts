@@ -65,4 +65,10 @@ export class SiteController {
     return await this.siteInteractorBoundary.getAll(options);
   }
 
+  @Get("active/:id")
+  async active(
+    @Param("id") id: number
+  ): Promise<SiteResponseModel> {
+    return this.siteInteractorBoundary.active(id);
+  }
 }

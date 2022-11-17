@@ -1,5 +1,3 @@
-import { AuthorizedUserService } from "../adapter/data/services/AuthorizedUserService";
-
 export enum IOMsg{
   EMPTY = "",
   OK = "Operation successful!",
@@ -20,5 +18,6 @@ export enum IOMsg{
   NA = "N/A",
   NO_DATA_API = "No data found to populate on spread sheet!",
   NO_SITE = "No site found to populate data on spread sheet!",
-  COMING_SOON = "Other tool service coming soon....!"
+  COMING_SOON = "Other tool service coming soon....!",
+  SITE_ACTIVATED = "Site successfully activated..!"
 }

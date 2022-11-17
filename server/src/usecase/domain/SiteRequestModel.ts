@@ -2,9 +2,7 @@ import { IsBoolean, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-val
 
 export class SiteRequestModel {
 
-  @IsNumber()
-  @ValidateIf((object, value) => value !== null)
-  id: number | null;
+  id?: number;
 
   @IsString()
   @IsNotEmpty()

@@ -9,4 +9,5 @@ export interface SiteInteractorBoundary {
   edit(siteRequestModel: SiteRequestModel) : Promise<SiteResponseModel>
   getById(id: number) : Promise<SiteResponseModel>;
   getAll(options: IPaginationOptions) : Promise<SiteResponseModel>;
+  active(id: number) : Promise<SiteResponseModel>;
 }

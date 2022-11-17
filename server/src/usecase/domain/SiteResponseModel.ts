@@ -62,4 +62,15 @@ export class SiteResponseModel implements SitePresenter {
     return Promise.resolve(this);
   }
 
+  activeResponse(isActivated: boolean): Promise<SiteResponseModel> {
+    if (isActivated) {
+      this.code = IOCode.OK;
+      this.msg = IOMsg.SITE_ACTIVATED;
+    } else {
+      this.code = IOCode.ERROR;
+      this.msg = IOMsg.ERROR;
+    }
+    return Promise.resolve(this);
+  }
+
 }

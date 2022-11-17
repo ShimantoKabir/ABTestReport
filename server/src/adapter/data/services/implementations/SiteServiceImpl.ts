@@ -42,4 +42,31 @@ export class SiteServiceImpl implements SiteService {
     });
     return Promise.resolve(deletedRes.affected > 0);
   }
+
+  async activeById(id: number): Promise<boolean> {
+    try {
+      let isActivated = false;
+
+      const inactiveRes = await this.siteRepository.createQueryBuilder()
+      .update(SiteEntity).set({
+        isActive: false
+      }).where("isActive = :isActive",{isActive : true})
+      .execute();
+
+      const activeRes = await this.siteRepository.createQueryBuilder()
+      .update(SiteEntity).set({
+        isActive: true
+      }).where("id = :id",{id : id})
+      .execute();
+
+      if (activeRes.affected > 0){
+        isActivated = true;
+      }
+
+      return Promise.resolve(isActivated);
+    }catch (e) {
+      console.log("activeById",e);
+      return Promise.resolve(false);
+    }
+  }
 }

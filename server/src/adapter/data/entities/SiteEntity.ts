@@ -4,7 +4,7 @@ import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 export class SiteEntity {
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
   @Column()
   siteName: string;

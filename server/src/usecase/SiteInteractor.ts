@@ -76,4 +76,9 @@ export class SiteInteractor implements SiteInteractorBoundary{
     }
     return this.sitePresenter.okResponse(response);
   }
+
+  async active(id: number): Promise<SiteResponseModel> {
+    const isActivated = await this.siteService.activeById(id);
+    return this.sitePresenter.activeResponse(isActivated);
+  }
 }

@@ -11,11 +11,13 @@ import { SiteEntity } from "../../data/entities/SiteEntity";
 import { JwtModule } from "@nestjs/jwt";
 import { AuthTokenStrategy } from "../../security/strategies/AuthTokenStrategy";
 import { RefreshTokenStrategy } from "../../security/strategies/RefreshTokenStrategy";
+import { PassportModule } from "@nestjs/passport";
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([SiteEntity]),
-    JwtModule.register({})
+    JwtModule.register({}),
+    PassportModule
   ],
   controllers: [SiteController],
   providers: [
@@ -33,6 +35,6 @@ import { RefreshTokenStrategy } from "../../security/strategies/RefreshTokenStra
     },
     AuthTokenStrategy,
     RefreshTokenStrategy
-  ],
+  ]
 })
 export class SiteModule{}

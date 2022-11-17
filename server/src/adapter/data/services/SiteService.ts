@@ -10,4 +10,5 @@ export interface SiteService {
   create(siteRequestModel: SiteRequestModel) : Promise<SiteEntity>
   readAll(options: IPaginationOptions): Promise<Pagination<SiteEntity>>
   update(siteRequestModel: SiteRequestModel) : Promise<UpdateResult>
+  activeById(id: number) : Promise<boolean>
 }
