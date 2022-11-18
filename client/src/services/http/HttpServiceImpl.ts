@@ -41,7 +41,7 @@ export class HttpServiceImpl implements HttpService{
 				try {
 					const refreshRes = await axios({
 						method: 'post',
-						url: AppConstants.baseUrl+'auth/refresh',
+						url: AppConstants.baseUrl+'users/refresh',
 						headers : {
 							'Authorization': 'Bearer '+ refreshToken
 						}

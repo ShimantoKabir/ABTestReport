@@ -36,7 +36,7 @@ export class TopNavComponent extends React.Component{
 		return (
 			<Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
 				<Container fluid>
-					<Link className="navbar-brand" to="/">ABTestReport</Link>
+					<Link className="navbar-brand" to="/home">ABTestReport</Link>
 					<Navbar.Toggle aria-controls="responsive-navbar-nav" />
 					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="me-auto"></Nav>

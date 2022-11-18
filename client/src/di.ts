@@ -17,8 +17,11 @@ import {HS, HttpService} from "./services/http/HttpService";
 import {HttpServiceImpl} from "./services/http/HttpServiceImpl";
 import {SCM, SiteComponentModel} from "./components/site/model/SiteComponentModel";
 import {SiteComponentModelImpl} from "./components/site/model/SiteComponentModelImpl";
+import {SiteService, SS} from "./services/domain/SiteService";
+import {SiteServiceImpl} from "./services/domain/implementations/SiteServiceImpl";
 
 const container = new Container();
+container.bind<HttpService>(HS).to(HttpServiceImpl);
 container.bind<LoginComponentModel>(LCM).to(LoginComponentModelImpl);
 container.bind<AlertComponentModel>(ACM).to(AlertComponentModelImpl).inSingletonScope();
 container.bind<ProtectedComponentModel>(PCM).to(ProtectedComponentModelImpl).inSingletonScope();
@@ -26,7 +29,7 @@ container.bind<RegistrationComponentModel>(RCM).to(RegistrationComponentModelImp
 container.bind<UserService>(US).to(UserServiceImpl);
 container.bind<UserDtoBuilder>(UDB).to(UserDtoBuilderImpl);
 container.bind<AlertDtoBuilder>(ADB).to(AlertDtoBuilderImpl);
-container.bind<HttpService>(HS).to(HttpServiceImpl);
 container.bind<SiteComponentModel>(SCM).to(SiteComponentModelImpl);
+container.bind<SiteService>(SS).to(SiteServiceImpl);
 
 export const DiContainer = container;

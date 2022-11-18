@@ -20,4 +20,5 @@ export enum IOMsg{
   LOADING_HEAD = "LOADING",
   SUCCESS_HEAD = "SUCCESS",
   ERROR_HEAD = "ERROR",
+  INIT_LOAD_ERROR = "Initial data load successfully!",
 }

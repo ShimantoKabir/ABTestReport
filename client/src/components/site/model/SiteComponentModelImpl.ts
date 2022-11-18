@@ -1,10 +1,17 @@
 import {SiteComponentModel} from "./SiteComponentModel";
 import {SiteDto} from "../../../dtos/SiteDto";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 import {action, makeObservable, observable} from "mobx";
 import {KeyValue} from "../../../dtos/KeyValue";
 import {ToolTypeToArray} from "../../../types/ToolType";
 import {ChangeEvent, FormEvent} from "react";
+import {SiteService, SS} from "../../../services/domain/SiteService";
+import {HS, HttpService} from "../../../services/http/HttpService";
+import {AlertDto} from "../../../dtos/AlertDto";
+import {MetaDto} from "../../../dtos/MetaDto";
+import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
+import {IOCode} from "../../../common/IOCode";
+import {IOMsg} from "../../../common/IOMsg";
 
 @injectable()
 export class SiteComponentModelImpl  implements SiteComponentModel{
@@ -18,6 +25,16 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 	isModalOpen: boolean = false;
 	isFormValid: boolean = false;
 	sites: SiteDto[] = [];
+	meta: MetaDto | null = null;
+
+	@inject(SS)
+	private readonly siteService!: SiteService;
+
+	@inject(HS)
+	private readonly httpService!: HttpService;
+
+	@inject(ADB)
+	private readonly alertDtoBuilder!: AlertDtoBuilder;
 
 	constructor() {
 		makeObservable(this, {
@@ -28,6 +45,7 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 			isActive: observable,
 			sheetId: observable,
 			siteName: observable,
+			meta: observable,
 			toolType: observable,
 			sites: observable,
 			deleteSite: action,
@@ -36,6 +54,8 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 			updateSite: action,
 			getToolTypes: action,
 			onModelToggle: action,
+			validateForm: action,
+			changSiteStatus: action,
 			onInputChange: action
 		});
 	}
@@ -44,8 +64,27 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 		return Promise.resolve(false);
 	}
 
-	getSites(page: number, limit: number): Promise<SiteDto[]> {
-		return Promise.resolve([]);
+	async getSites(page: number, limit: number): Promise<AlertDto> {
+
+		let alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+			.withStatus(true)
+			.withTitle(IOMsg.ERROR_HEAD)
+			.withBody(IOMsg.INIT_LOAD_ERROR)
+			.build();
+
+		const res = await this.siteService.getAll(page,limit);
+
+		if (res !== null){
+			this.sites = res.items;
+			this.meta = res.meta;
+			alertDto = this.alertDtoBuilder.withCode(IOCode.OK)
+			.withStatus(false)
+			.withTitle(IOMsg.SUCCESS_HEAD)
+			.withBody(IOMsg.INIT_LOAD_MSG)
+			.build();
+		}
+
+		return Promise.resolve(alertDto);
 	}
 
 	async saveSite(e: FormEvent<HTMLFormElement>): Promise<void> {
@@ -90,5 +129,11 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 		}
 	}
 
-
+	changSiteStatus(id: number): void {
+		this.sites.map(obj=>{
+			obj.isActive = obj.id === id;
+			return obj;
+		});
+		console.log(this.sites);
+	}
 }

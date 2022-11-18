@@ -6,5 +6,5 @@ export class ResponseDto{
 	msg!: string;
 	authToken!: string;
 	refreshToken!: string;
-	sites!: PaginationDto<SiteDto>[]
+	sites!: PaginationDto<SiteDto>;
 }

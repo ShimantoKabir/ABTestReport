@@ -14,9 +14,6 @@ export class HomeComponent extends React.Component{
 
 	componentDidMount() {
 		!this.protectedComponent.isProtectComponentDisplayed && this.protectedComponent.displayProtectComponent(true)
-		this.httpService.getInstance().get("/users/shahariar.kabir@brainlabsdigital.com").then(obj=>{
-			console.log("obj=",obj);
-		})
 	}
 
 	render() : React.ReactNode {

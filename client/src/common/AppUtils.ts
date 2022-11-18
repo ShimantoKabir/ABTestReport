@@ -11,8 +11,6 @@ export class AppUtils {
 		const authTokenDate = date.setMinutes(date.getMinutes()+15);
 		const refreshTokenDate = date.setDate(date.getDate()+7);
 
-		console.log("userDto=",userDto);
-
 		cookies.set(
 			AppConstants.loggedInCookieName,
 			true,

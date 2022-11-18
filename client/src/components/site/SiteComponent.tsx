@@ -6,6 +6,7 @@ import {resolve} from "inversify-react";
 import {PCM, ProtectedComponentModel} from "../../security/model/ProtectedComponentModel";
 import {observer} from "mobx-react";
 import {SCM, SiteComponentModel} from "./model/SiteComponentModel";
+import {ACM, AlertComponentModel} from "../alert/model/AlertComponentModel";
 
 @observer
 export class SiteComponent extends React.Component {
@@ -16,14 +17,24 @@ export class SiteComponent extends React.Component {
 	@resolve(SCM)
 	private readonly model!: SiteComponentModel;
 
-	componentDidMount() {
+	@resolve(ACM)
+	private readonly alert!: AlertComponentModel;
+
+	async componentDidMount() {
 		!this.protectedComponent.isProtectComponentDisplayed && this.protectedComponent.displayProtectComponent(true)
+		this.alert.startLoading();
+		const alertDto = await this.model.getSites(1,5);
+		this.alert.changeModalState(alertDto);
 	}
 
 	doSave = async (e: FormEvent<HTMLFormElement>) => {
 		if (this.model.validateForm(e)){
 
 		}
+	}
+
+	doChangSiteStatus = (id: number) => {
+		this.model.changSiteStatus(id);
 	}
 
 	render(): React.ReactNode {
@@ -135,24 +146,39 @@ export class SiteComponent extends React.Component {
 								Add
 							</Button>
 						</div>
-						<Table striped bordered hover size="sm">
+						<Table striped bordered hover size="sm" responsive>
 							<thead>
 							<tr>
 								<th>SL</th>
+								<th>Status</th>
 								<th>Client Name</th>
 								<th>Site Name</th>
 								<th>Api Key</th>
+								<th>Sheet ID</th>
 								<th>Tool Type</th>
+								<th>Edit</th>
+								<th>Delete</th>
 							</tr>
 							</thead>
 							<tbody>
 							{this.model.sites.length > 0 && this.model.sites.map((item: any,index) => (
 								<tr key={index} >
 									<td>{index+1}</td>
+									<td>
+										<Form.Check
+											checked={item.isChecked}
+											onChange={()=>this.doChangSiteStatus(item.id)}
+											type="switch"
+											id="custom-switch"
+										/>
+									</td>
 									<td>{item.clientName}</td>
 									<td>{item.siteName}</td>
 									<td>{item.apiKey}</td>
+									<td>{item.sheetId}</td>
 									<td>{ToolType[item.toolType]}</td>
+									<td><Button variant="warning" size="sm" >Edit</Button></td>
+									<td><Button variant="danger" size="sm" >Delete</Button></td>
 								</tr>
 							))}
 							</tbody>
