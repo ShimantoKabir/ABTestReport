@@ -166,7 +166,7 @@ export class SiteComponent extends React.Component {
 									<td>{index+1}</td>
 									<td>
 										<Form.Check
-											checked={item.isChecked}
+											checked={item.isActive}
 											onChange={()=>this.doChangSiteStatus(item.id)}
 											type="switch"
 											id="custom-switch"

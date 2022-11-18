@@ -130,10 +130,8 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 	}
 
 	changSiteStatus(id: number): void {
-		this.sites.map(obj=>{
+		this.sites.forEach(obj=>{
 			obj.isActive = obj.id === id;
-			return obj;
 		});
-		console.log(this.sites);
 	}
 }
