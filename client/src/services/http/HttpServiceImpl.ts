@@ -4,7 +4,7 @@ import {Cookies} from "react-cookie";
 import AppConstants from "../../common/AppConstants";
 import {inject, injectable} from "inversify";
 import {UDB, UserDtoBuilder} from "../../dtos/builders/UserDtoBuilder";
-import {AppUtils} from "../../common/AppUtils";
+import {CookieService, CS} from "../cookie/CookieService";
 
 @injectable()
 export class HttpServiceImpl implements HttpService{
@@ -14,6 +14,9 @@ export class HttpServiceImpl implements HttpService{
 
 	@inject(UDB)
 	private readonly userDtoBuilder!: UserDtoBuilder;
+
+	@inject(CS)
+	private readonly cookieService!: CookieService;
 
 	constructor() {
 		this.axiosInstance = axios.create({
@@ -26,6 +29,7 @@ export class HttpServiceImpl implements HttpService{
 
 	getInstance(): AxiosInstance {
 
+
 		const cookies = new Cookies();
 		const authToken = cookies.get(AppConstants.authTokenCookieName);
 		const refreshToken = cookies.get(AppConstants.refreshTokenCookieName);
@@ -36,7 +40,6 @@ export class HttpServiceImpl implements HttpService{
 				config.headers = {
 					'Authorization': 'Bearer '+ authToken
 				}
-				console.log("from-cookie=");
 			}else {
 				try {
 					const refreshRes = await axios({
@@ -51,12 +54,11 @@ export class HttpServiceImpl implements HttpService{
 					.withRefreshToken(refreshRes.data.refreshToken)
 					.build();
 
-					AppUtils.setCookies(userDto);
+					this.cookieService.setAuthCookie(userDto);
 
 					config.headers = {
 						'Authorization': 'Bearer '+ refreshRes.data.authToken
 					}
-					console.log("from-request=");
 				}catch (e) {
 					console.log("AuthRefreshError=",e);
 				}

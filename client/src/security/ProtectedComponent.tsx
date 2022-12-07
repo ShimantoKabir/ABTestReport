@@ -10,6 +10,10 @@ export class ProtectedComponent extends Component{
 	@resolve(PCM)
 	private readonly componentModel!: ProtectedComponentModel;
 
+	componentDidMount() {
+		this.componentModel.displayProtectComponent(true);
+	}
+
 	render() : ReactNode {
 		return (
 			<>

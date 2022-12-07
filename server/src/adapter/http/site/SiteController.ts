@@ -26,7 +26,7 @@ export class SiteController {
   }
 
   @Post()
-  async Save(
+  async save(
     @Body() siteRequestModel: SiteRequestModel
   ): Promise<SiteResponseModel> {
     return await this.siteInteractorBoundary.save(siteRequestModel);

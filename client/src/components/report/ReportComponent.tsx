@@ -1,4 +1,4 @@
-import React, {ChangeEvent} from "react";
+import React, {ChangeEvent, Component} from "react";
 import {Button, Container, Form} from "react-bootstrap";
 import axios from "axios";
 import {DeviceTypeToArray} from "../../types/DeviceType";
@@ -7,7 +7,8 @@ import {IOMsg} from "../../common/IOMsg";
 import AppConstants from "../../common/AppConstants";
 import {SourceTypeToArray} from "../../types/SourceType";
 
-export class ReportComponent extends React.Component {
+export class ReportComponent extends Component {
+
 	state = {
 		id: "",
 		startDate: "",

@@ -11,7 +11,6 @@ export class UserDtoBuilderImpl implements UserDtoBuilder{
 		this.userDto = new UserDto();
 	}
 
-
 	withAuthToken(authToken: string): this {
 		this.userDto.authToken = authToken;
 		return this;

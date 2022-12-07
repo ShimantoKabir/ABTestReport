@@ -7,6 +7,7 @@ import {PCM, ProtectedComponentModel} from "../../security/model/ProtectedCompon
 import {observer} from "mobx-react";
 import {SCM, SiteComponentModel} from "./model/SiteComponentModel";
 import {ACM, AlertComponentModel} from "../alert/model/AlertComponentModel";
+import {SiteDto} from "../../dtos/SiteDto";
 
 @observer
 export class SiteComponent extends React.Component {
@@ -20,21 +21,38 @@ export class SiteComponent extends React.Component {
 	@resolve(ACM)
 	private readonly alert!: AlertComponentModel;
 
-	async componentDidMount() {
-		!this.protectedComponent.isProtectComponentDisplayed && this.protectedComponent.displayProtectComponent(true)
+	componentDidMount = async () => {
 		this.alert.startLoading();
 		const alertDto = await this.model.getSites(1,5);
 		this.alert.changeModalState(alertDto);
 	}
 
-	doSave = async (e: FormEvent<HTMLFormElement>) => {
-		if (this.model.validateForm(e)){
-
-		}
+	onFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
+		this.alert.startLoading();
+		const alertDto = await this.model.doSubmitForm(e);
+		this.alert.changeModalState(alertDto);
 	}
 
-	doChangSiteStatus = (id: number) => {
-		this.model.changSiteStatus(id);
+	doChangSiteStatus = async (id: number) => {
+		this.alert.startLoading();
+		const alertDto = await this.model.changSiteStatus(id);
+		this.alert.changeModalState(alertDto);
+	}
+
+	fillUpForm = async (site: SiteDto) => {
+		await this.model.setModelData(site);
+		this.model.onModelToggle(true);
+	}
+
+	showForm = () => {
+		this.model.emptyModelData();
+		this.model.onModelToggle(true)
+	}
+
+	onDelete = async (id: number) =>{
+		this.alert.startLoading();
+		const alertDto = await this.model.deleteSite(id);
+		this.alert.changeModalState(alertDto);
 	}
 
 	render(): React.ReactNode {
@@ -44,7 +62,7 @@ export class SiteComponent extends React.Component {
 					<Form
 						noValidate
 						validated={this.model.isFormValid}
-						onSubmit={(e: FormEvent<HTMLFormElement>)=>this.doSave(e)}
+						onSubmit={(e: FormEvent<HTMLFormElement>)=>this.onFormSubmit(e)}
 					>
 						<Modal.Header closeButton>
 							<Modal.Title>Site</Modal.Title>
@@ -134,7 +152,12 @@ export class SiteComponent extends React.Component {
 							<Button variant="secondary" onClick={() => this.model.onModelToggle(false)}>
 								Close
 							</Button>
-							<Button variant="primary" type="submit" >Save</Button>
+							{
+								this.model.id === 0 ?
+								<Button variant="primary" type="submit" >Save</Button>
+								:
+								<Button variant="primary" type="submit" >Update</Button>
+							}
 						</Modal.Footer>
 					</Form>
 				</Modal>
@@ -142,7 +165,7 @@ export class SiteComponent extends React.Component {
 					<main className="site-container">
 						<div className="site-header">
 							<h4>Site</h4>
-							<Button variant="primary" onClick={() => this.model.onModelToggle(true)}>
+							<Button variant="primary" onClick={() => this.showForm()}>
 								Add
 							</Button>
 						</div>
@@ -161,7 +184,7 @@ export class SiteComponent extends React.Component {
 							</tr>
 							</thead>
 							<tbody>
-							{this.model.sites.length > 0 && this.model.sites.map((item: any,index) => (
+							{this.model.sites.length > 0 && this.model.sites.map((item: SiteDto,index) => (
 								<tr key={index} >
 									<td>{index+1}</td>
 									<td>
@@ -177,8 +200,24 @@ export class SiteComponent extends React.Component {
 									<td>{item.apiKey}</td>
 									<td>{item.sheetId}</td>
 									<td>{ToolType[item.toolType]}</td>
-									<td><Button variant="warning" size="sm" >Edit</Button></td>
-									<td><Button variant="danger" size="sm" >Delete</Button></td>
+									<td>
+										<Button
+											variant="warning"
+											size="sm"
+											onClick={()=>this.fillUpForm(item)}
+										>
+											Edit
+										</Button>
+									</td>
+									<td>
+										<Button
+											variant="danger"
+											size="sm"
+											onClick={()=>this.onDelete(item.id)}
+										>
+											Delete
+										</Button>
+									</td>
 								</tr>
 							))}
 							</tbody>

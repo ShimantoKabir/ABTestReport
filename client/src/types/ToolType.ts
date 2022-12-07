@@ -1,3 +1,5 @@
+import {KeyValue} from "../dtos/KeyValue";
+
 export enum ToolType {
 	VWO = 1,
 	OPTIMIZELY = 2,
@@ -5,14 +7,16 @@ export enum ToolType {
 }
 
 export function ToolTypeToArray() {
-	let toolTypes: { key: number; value: string; }[] = [];
+	let toolTypes: KeyValue<number>[] = [];
 	const toolTypeKeys = Object.keys(ToolType);
 	toolTypeKeys.forEach(key => {
 		let keyNumber = Number(key);
 		if (!isNaN(keyNumber) && toolTypes.findIndex(x => x.key === keyNumber)) {
 			toolTypes.push({
 				key: Number(key),
-				value: ToolType[keyNumber]
+				value: ToolType[keyNumber],
+				type: "toolType",
+				isChecked: false
 			})
 		}
 	})

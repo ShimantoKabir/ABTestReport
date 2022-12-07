@@ -6,5 +6,6 @@ export interface SiteService {
 	save(siteDto: SiteDto) : Promise<SiteDto|null>;
 	edit(siteDto: SiteDto) : Promise<SiteDto|null>;
 	delete(id: number) : Promise<boolean>;
-	getAll(page: number, limit: number): Promise<PaginationDto<SiteDto>|null>
+	getAll(page: number, limit: number): Promise<PaginationDto<SiteDto>|null>;
+	active(id: number) : Promise<boolean>;
 }

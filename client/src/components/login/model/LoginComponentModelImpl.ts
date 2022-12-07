@@ -9,7 +9,7 @@ import {UserDto} from "../../../dtos/UserDto";
 import {UDB, UserDtoBuilder} from "../../../dtos/builders/UserDtoBuilder";
 import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
 import {US, UserService} from "../../../services/domain/UserService";
-import {AppUtils} from "../../../common/AppUtils";
+import {CookieService, CS} from "../../../services/cookie/CookieService";
 
 @injectable()
 export class LoginComponentModelImpl implements LoginComponentModel {
@@ -27,6 +27,9 @@ export class LoginComponentModelImpl implements LoginComponentModel {
 
 	@inject(ADB)
 	private readonly alertDtoBuilder!: AlertDtoBuilder;
+
+	@inject(CS)
+	private readonly cookieService!: CookieService;
 
 	constructor() {
 		makeObservable(this, {
@@ -52,7 +55,7 @@ export class LoginComponentModelImpl implements LoginComponentModel {
 		const isOk = userDtoRes.code === IOCode.OK;
 
 		if (isOk){
-			AppUtils.setCookies(userDtoRes);
+			this.cookieService.setAuthCookie(userDtoRes);
 			this.isLoggedIn = true;
 		}
 

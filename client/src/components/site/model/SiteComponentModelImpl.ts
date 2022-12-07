@@ -12,6 +12,7 @@ import {MetaDto} from "../../../dtos/MetaDto";
 import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
 import {IOCode} from "../../../common/IOCode";
 import {IOMsg} from "../../../common/IOMsg";
+import {SDB, SiteDtoBuilder} from "../../../dtos/builders/SiteDtoBuilder";
 
 @injectable()
 export class SiteComponentModelImpl  implements SiteComponentModel{
@@ -26,6 +27,7 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 	isFormValid: boolean = false;
 	sites: SiteDto[] = [];
 	meta: MetaDto | null = null;
+	id: number = 0;
 
 	@inject(SS)
 	private readonly siteService!: SiteService;
@@ -36,8 +38,12 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 	@inject(ADB)
 	private readonly alertDtoBuilder!: AlertDtoBuilder;
 
+	@inject(SDB)
+	private readonly siteDtoBuilder!: SiteDtoBuilder;
+
 	constructor() {
 		makeObservable(this, {
+			id: observable,
 			apiKey: observable,
 			clientName: observable,
 			isModalOpen: observable,
@@ -50,18 +56,39 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 			sites: observable,
 			deleteSite: action,
 			getSites: action,
-			saveSite: action,
-			updateSite: action,
 			getToolTypes: action,
 			onModelToggle: action,
 			validateForm: action,
 			changSiteStatus: action,
-			onInputChange: action
+			onInputChange: action,
+			setModelData: action,
+			emptyModelData: action,
+			doSubmitForm: action
 		});
 	}
 
-	deleteSite(id: number): Promise<boolean> {
-		return Promise.resolve(false);
+	async deleteSite(id: number): Promise<AlertDto> {
+		const isDeleted =  await this.siteService.delete(id);
+		let alertDto: AlertDto|null = null;
+
+		if (!isDeleted){
+			alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+			.withStatus(true)
+			.withTitle(IOMsg.ERROR_HEAD)
+			.withBody(IOMsg.ERROR_BODY)
+			.build();
+			return Promise.resolve(alertDto);
+		}
+
+		this.sites = this.sites.filter(obj=>obj.id !== id);
+
+		alertDto = this.alertDtoBuilder.withCode(IOCode.OK)
+		.withStatus(false)
+		.withTitle(IOMsg.SUCCESS_HEAD)
+		.withBody(IOMsg.OK)
+		.build();
+
+		return Promise.resolve(alertDto);
 	}
 
 	async getSites(page: number, limit: number): Promise<AlertDto> {
@@ -87,15 +114,7 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 		return Promise.resolve(alertDto);
 	}
 
-	async saveSite(e: FormEvent<HTMLFormElement>): Promise<void> {
-
-	}
-
-	async updateSite(siteDto: SiteDto): Promise<void> {
-
-	}
-
-	getToolTypes(): KeyValue[] {
+	getToolTypes(): KeyValue<number>[] {
 		return ToolTypeToArray();
 	}
 
@@ -110,7 +129,7 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 		return e.currentTarget.checkValidity();
 	}
 
-	onInputChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement|HTMLSelectElement>): void {
+	onInputChange(e: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>): void {
 		switch(e.target.id) {
 			case "clientName":
 				this.clientName = e.target.value;
@@ -129,9 +148,104 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 		}
 	}
 
-	changSiteStatus(id: number): void {
-		this.sites.forEach(obj=>{
-			obj.isActive = obj.id === id;
-		});
+	async changSiteStatus(id: number): Promise<AlertDto> {
+
+		const isActivated = await this.siteService.active(id);
+		let alertDto = null;
+
+		if (isActivated){
+
+			this.sites.forEach(obj=>{
+				obj.isActive = obj.id === id;
+			});
+
+			alertDto = this.alertDtoBuilder.withCode(IOCode.OK)
+			.withStatus(false)
+			.withTitle(IOMsg.SUCCESS_HEAD)
+			.withBody(IOMsg.SITE_ACTIVE)
+			.build();
+		}else {
+			alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+			.withStatus(true)
+			.withTitle(IOMsg.ERROR_HEAD)
+			.withBody(IOMsg.ERROR_BODY)
+			.build();
+		}
+
+		return Promise.resolve(alertDto)
+	}
+
+	setModelData(siteDto: SiteDto): Promise<boolean> {
+		this.id = siteDto.id;
+		this.clientName = siteDto.siteName;
+		this.siteName = siteDto.siteName;
+		this.apiKey = siteDto.apiKey;
+		this.sheetId = siteDto.sheetId;
+		this.toolType = siteDto.toolType;
+		return Promise.resolve(false);
+	}
+
+	emptyModelData(): boolean {
+		this.id = 0;
+		this.clientName = "";
+		this.siteName = "";
+		this.apiKey = "";
+		this.sheetId = "";
+		this.toolType = 0;
+		return true;
+	}
+
+	async doSubmitForm(e: FormEvent<HTMLFormElement>): Promise<AlertDto> {
+		const isValid = this.validateForm(e)
+		let alertDto: AlertDto | null = null;
+
+		if (!isValid){
+			alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+			.withStatus(true)
+			.withTitle(IOMsg.ERROR_HEAD)
+			.withBody(IOMsg.VALIDATION_ERROR)
+			.build();
+			return Promise.resolve(alertDto);
+		}
+
+		let siteDto: SiteDto = this.siteDtoBuilder.withSiteName(this.siteName)
+			.withClientName(this.clientName)
+			.withApiKey(this.apiKey)
+			.withSheetId(this.sheetId)
+			.withIsActive(this.isActive)
+			.withId(this.id)
+			.withToolType(this.toolType)
+			.build();
+
+		const siteDtoRes: SiteDto|null = this.id === 0 ? await this.siteService.save(siteDto)
+			: await this.siteService.edit(siteDto);
+
+		if (siteDtoRes === null){
+			alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+			.withStatus(true)
+			.withTitle(IOMsg.ERROR_HEAD)
+			.withBody(IOMsg.ERROR_BODY)
+			.build();
+			return Promise.resolve(alertDto);
+		}
+
+		if (this.id === 0){
+			this.sites.push(siteDtoRes);
+		}else {
+			const index = this.sites.findIndex(obj=>obj.id === siteDtoRes.id);
+			this.sites[index].clientName = siteDtoRes.clientName;
+			this.sites[index].siteName = siteDtoRes.siteName;
+			this.sites[index].apiKey = siteDtoRes.apiKey;
+			this.sites[index].sheetId = siteDtoRes.sheetId;
+			this.sites[index].toolType = siteDtoRes.toolType;
+		}
+
+		alertDto = this.alertDtoBuilder.withCode(IOCode.OK)
+		.withStatus(false)
+		.withTitle(IOMsg.SUCCESS_HEAD)
+		.withBody(IOMsg.OK)
+		.build();
+
+		return Promise.resolve(alertDto);
 	}
 }

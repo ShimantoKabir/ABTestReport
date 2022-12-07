@@ -6,6 +6,7 @@ import {MetaDto} from "../../../dtos/MetaDto";
 
 export const SCM = "SCM";
 export interface SiteComponentModel {
+	id: number;
 	isModalOpen: boolean;
 	clientName: string;
 	isFormValid: boolean;
@@ -16,13 +17,14 @@ export interface SiteComponentModel {
 	isActive: boolean;
 	meta: MetaDto|null,
 	sites: SiteDto[];
-	getToolTypes() : KeyValue[];
+	getToolTypes() : KeyValue<number>[];
 	getSites(page: number, limit: number) : Promise<AlertDto>;
-	saveSite(e: FormEvent<HTMLFormElement>): void;
-	updateSite(siteDto: SiteDto) : void;
-	changSiteStatus(id: number) : void;
-	deleteSite(id: number) : Promise<boolean>;
+	changSiteStatus(id: number) : Promise<AlertDto>;
+	deleteSite(id: number) : Promise<AlertDto>;
 	onModelToggle(status: boolean) : void;
 	validateForm(e: FormEvent<HTMLFormElement>) : boolean;
+	doSubmitForm(e: FormEvent<HTMLFormElement>) : Promise<AlertDto>;
 	onInputChange(e: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) : void;
+	setModelData(siteDto: SiteDto) : Promise<boolean>;
+	emptyModelData() : boolean;
 }
