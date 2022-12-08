@@ -20,8 +20,8 @@ export class ProtectedComponentModelImpl implements ProtectedComponentModel{
 
 	displayProtectComponent(status: boolean): void {
 		if (status){
-			const authToken = this.cookieService.getInstance().get(AppConstants.authTokenCookieName)
-			if (authToken){
+			const refreshToken = this.cookieService.getInstance().get(AppConstants.refreshTokenCookieName)
+			if (refreshToken){
 				this.isProtectComponentDisplayed = true;
 			}
 		}else {

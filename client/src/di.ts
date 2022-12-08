@@ -23,10 +23,12 @@ import {CookieService, CS} from "./services/cookie/CookieService";
 import {CookieServiceImpl} from "./services/cookie/CookieServiceImpl";
 import {SDB, SiteDtoBuilder} from "./dtos/builders/SiteDtoBuilder";
 import {SiteDtoBuilderImpl} from "./dtos/builders/implementations/SiteDtoBuilderImpl";
-import {ReportComponentModel} from "./components/report/model/ReportComponentModel";
+import {ReportComponentModel, RTCM} from "./components/report/model/ReportComponentModel";
 import {ReportComponentModelImpl} from "./components/report/model/ReportComponentModelImpl";
 import {ReportDtoBuilderImpl} from "./dtos/builders/implementations/ReportDtoBuilderImpl";
 import {RDB, ReportDtoBuilder} from "./dtos/builders/ReportDtoBuilder";
+import {ReportService, RS} from "./services/domain/ReportService";
+import {ReportServiceImpl} from "./services/domain/implementations/ReportServiceImpl";
 
 const container = new Container();
 container.bind<HttpService>(HS).to(HttpServiceImpl);
@@ -41,7 +43,8 @@ container.bind<SiteDtoBuilder>(SDB).to(SiteDtoBuilderImpl);
 container.bind<AlertDtoBuilder>(ADB).to(AlertDtoBuilderImpl);
 container.bind<ReportDtoBuilder>(RDB).to(ReportDtoBuilderImpl);
 container.bind<SiteComponentModel>(SCM).to(SiteComponentModelImpl);
-container.bind<ReportComponentModel>(RCM).to(ReportComponentModelImpl);
+container.bind<ReportComponentModel>(RTCM).to(ReportComponentModelImpl);
 container.bind<SiteService>(SS).to(SiteServiceImpl);
+container.bind<ReportService>(RS).to(ReportServiceImpl);
 
 export const DiContainer = container;

@@ -27,8 +27,8 @@ export class ReportDtoBuilderImpl implements ReportDtoBuilder{
 		return this;
 	}
 
-	withSiteId(siteId: number): this {
-		this.reportDto.siteId = siteId;
+	withSiteName(siteName: string): this {
+		this.reportDto.siteName = siteName;
 		return this;
 	}
 

@@ -1,19 +1,15 @@
 import "../site/Site.css"
-import React, {ChangeEvent, FormEvent} from "react";
+import React, {ChangeEvent, Component, FormEvent} from "react";
 import {Button, Container, Form, Modal, Table} from "react-bootstrap";
 import {ToolType} from "../../types/ToolType";
 import {resolve} from "inversify-react";
-import {PCM, ProtectedComponentModel} from "../../security/model/ProtectedComponentModel";
 import {observer} from "mobx-react";
 import {SCM, SiteComponentModel} from "./model/SiteComponentModel";
 import {ACM, AlertComponentModel} from "../alert/model/AlertComponentModel";
 import {SiteDto} from "../../dtos/SiteDto";
 
 @observer
-export class SiteComponent extends React.Component {
-
-	@resolve(PCM)
-	private readonly protectedComponent!: ProtectedComponentModel;
+export class SiteComponent extends Component {
 
 	@resolve(SCM)
 	private readonly model!: SiteComponentModel;
@@ -23,7 +19,7 @@ export class SiteComponent extends React.Component {
 
 	componentDidMount = async () => {
 		this.alert.startLoading();
-		const alertDto = await this.model.getSites(1,5);
+		const alertDto = await this.model.fetchSites(1,5);
 		this.alert.changeModalState(alertDto);
 	}
 

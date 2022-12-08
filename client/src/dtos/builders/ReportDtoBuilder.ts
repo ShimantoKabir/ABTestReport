@@ -8,7 +8,7 @@ export interface ReportDtoBuilder{
 	withStartDate(startDate: string): this;
 	withEndDate(endDate: string): this;
 	withSites(sites: SiteDto[]): this;
-	withSiteId(siteId: number): this;
+	withSiteName(siteName: string): this;
 	withStartDateOffset(startDateOffset: number): this;
 	withEndDateOffset(endDateOffset: number): this;
 }

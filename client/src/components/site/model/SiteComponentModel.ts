@@ -18,7 +18,7 @@ export interface SiteComponentModel {
 	meta: MetaDto|null,
 	sites: SiteDto[];
 	getToolTypes() : KeyValue<number>[];
-	getSites(page: number, limit: number) : Promise<AlertDto>;
+	fetchSites(page: number, limit: number) : Promise<AlertDto>;
 	changSiteStatus(id: number) : Promise<AlertDto>;
 	deleteSite(id: number) : Promise<AlertDto>;
 	onModelToggle(status: boolean) : void;
@@ -27,4 +27,5 @@ export interface SiteComponentModel {
 	onInputChange(e: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) : void;
 	setModelData(siteDto: SiteDto) : Promise<boolean>;
 	emptyModelData() : boolean;
+	getSites() : SiteDto[];
 }

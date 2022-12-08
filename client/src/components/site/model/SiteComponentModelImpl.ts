@@ -6,7 +6,6 @@ import {KeyValue} from "../../../dtos/KeyValue";
 import {ToolTypeToArray} from "../../../types/ToolType";
 import {ChangeEvent, FormEvent} from "react";
 import {SiteService, SS} from "../../../services/domain/SiteService";
-import {HS, HttpService} from "../../../services/http/HttpService";
 import {AlertDto} from "../../../dtos/AlertDto";
 import {MetaDto} from "../../../dtos/MetaDto";
 import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
@@ -32,9 +31,6 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 	@inject(SS)
 	private readonly siteService!: SiteService;
 
-	@inject(HS)
-	private readonly httpService!: HttpService;
-
 	@inject(ADB)
 	private readonly alertDtoBuilder!: AlertDtoBuilder;
 
@@ -55,7 +51,6 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 			toolType: observable,
 			sites: observable,
 			deleteSite: action,
-			getSites: action,
 			getToolTypes: action,
 			onModelToggle: action,
 			validateForm: action,
@@ -63,7 +58,9 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 			onInputChange: action,
 			setModelData: action,
 			emptyModelData: action,
-			doSubmitForm: action
+			doSubmitForm: action,
+			fetchSites: action,
+			getSites: action
 		});
 	}
 
@@ -91,7 +88,7 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 		return Promise.resolve(alertDto);
 	}
 
-	async getSites(page: number, limit: number): Promise<AlertDto> {
+	async fetchSites(page: number, limit: number): Promise<AlertDto> {
 
 		let alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
 			.withStatus(true)
@@ -247,5 +244,9 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 		.build();
 
 		return Promise.resolve(alertDto);
+	}
+
+	getSites(): SiteDto[] {
+		return this.sites;
 	}
 }

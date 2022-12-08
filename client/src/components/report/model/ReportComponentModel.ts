@@ -3,10 +3,11 @@ import {KeyValue} from "../../../dtos/KeyValue";
 import {ChangeEvent, FormEvent} from "react";
 import {AlertDto} from "../../../dtos/AlertDto";
 
-export const RCM = "RCM";
+export const RTCM = "RTCM";
 export interface ReportComponentModel {
-	experimentId: number;
+	experimentId: string;
 	startDate: string;
+	siteName: string;
 	endDate: string;
 	startDateOffset: string;
 	endDateOffset: string;
@@ -20,4 +21,7 @@ export interface ReportComponentModel {
 	onCheckboxClick(e: ChangeEvent<HTMLInputElement>) : void;
 	formatDate(date: string): string;
 	doSubmitForm(e: FormEvent<HTMLFormElement>) : Promise<AlertDto>;
+	onInputChange(e: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) : void;
+	loadInitData() : boolean;
+	validateForm(e: FormEvent<HTMLFormElement>) : boolean;
 }

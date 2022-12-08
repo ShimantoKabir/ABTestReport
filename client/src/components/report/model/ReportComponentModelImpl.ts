@@ -8,11 +8,15 @@ import {IOCode} from "../../../common/IOCode";
 import {IOMsg} from "../../../common/IOMsg";
 import {ADB, AlertDtoBuilder} from "../../../dtos/builders/AlertDtoBuilder";
 import {action, makeObservable, observable} from "mobx";
+import {ReportService, RS} from "../../../services/domain/ReportService";
+import {RDB, ReportDtoBuilder} from "../../../dtos/builders/ReportDtoBuilder";
+import {DeviceTypeToArray} from "../../../types/DeviceType";
+import {SourceTypeToArray} from "../../../types/SourceType";
 
 @injectable()
 export class ReportComponentModelImpl implements ReportComponentModel{
 
-	experimentId: number = 0;
+	experimentId: string = "";
 	deviceTypes: KeyValue<string>[] = [];
 	endDate: string = "";
 	endDateOffset: string = "";
@@ -21,15 +25,22 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 	sourceTypes: KeyValue<string>[] = [];
 	startDate: string = "";
 	startDateOffset: string = "";
+	siteName: string = "";
 
 	@inject(ADB)
 	private readonly alertDtoBuilder!: AlertDtoBuilder;
 
+	@inject(RS)
+	private readonly reportService!: ReportService;
+
+	@inject(RDB)
+	private readonly reportDtoBuilder!: ReportDtoBuilder;
 
 	constructor() {
 		makeObservable(this, {
 			experimentId: observable,
 			deviceTypes: observable,
+			siteName: observable,
 			endDate: observable,
 			endDateOffset: observable,
 			isFormValid: observable,
@@ -44,6 +55,13 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 			onCheckboxClick: action,
 			doSubmitForm: action
 		});
+	}
+
+	validateForm(e: FormEvent<HTMLFormElement>): boolean {
+		e.preventDefault();
+		e.stopPropagation();
+		this.isFormValid = !e.currentTarget.checkValidity();
+		return e.currentTarget.checkValidity();
 	}
 
 	doSubmitForm(e: FormEvent<HTMLFormElement>): Promise<AlertDto> {
@@ -67,7 +85,7 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 	}
 
 	getDeviceTypes(): KeyValue<string>[] {
-		return [];
+		return this.deviceTypes;
 	}
 
 	getIsoDateTime(dateString: string, offset: string): string {
@@ -83,20 +101,42 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 	}
 
 	getSourceTypes(): KeyValue<string>[] {
-		return [];
+		return this.sourceTypes;
 	}
 
 	onCheckboxClick(e: ChangeEvent<HTMLInputElement>): void {
 		let types = e.target.name === "deviceType" ? this.deviceTypes : this.sourceTypes;
-		const newTypes = types.map(obj => {
+		types.forEach(obj => {
 			if (obj.key === e.target.id) {
 				obj.isChecked = !obj.isChecked;
 			}
 			return obj;
 		});
-		// this.setState({
-		// 	[e.target.name]: newTypes
-		// })
+	}
+
+	onInputChange(e: ChangeEvent<HTMLInputElement>): void {
+		switch(e.target.id) {
+			case "experimentId":
+				this.experimentId = e.target.value;
+				break;
+			case "startDate":
+				this.startDate = e.target.value;
+				break;
+			case "endDate":
+				this.endDate = e.target.value;
+				break;
+			case "sheetId":
+				this.sheetId = e.target.value;
+				break;
+			default:
+				this.toolType = Number(e.target.value);
+		}
+	}
+
+	loadInitData(): boolean {
+		this.deviceTypes = DeviceTypeToArray();
+		this.sourceTypes = SourceTypeToArray();
+		return false;
 	}
 
 }
