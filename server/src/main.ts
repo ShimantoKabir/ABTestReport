@@ -10,7 +10,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.use(cookieParser());
   app.enableCors({
-    origin: 'http://localhost:3000',
+    // origin: 'http://localhost:3000',
+    origin: 'https://ab-test-report-client-production.up.railway.app',
   });
   // @ts-ignore
   await app.listen(process.env.PORT | port);
