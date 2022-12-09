@@ -1,10 +1,10 @@
 import { OptimizelyService } from "../../../src/adapter/tool/OptimizelyService";
 import { Test } from "@nestjs/testing";
 import { HttpModule, HttpService } from "@nestjs/axios";
-import OptimizelyServiceImpl from "../../../src/adapter/tool/implementations/OptimizelyServiceImpl";
+import { OptimizelyServiceImpl } from "../../../src/adapter/tool/implementations/OptimizelyServiceImpl";
 import { MockData } from "../../MockData";
-import OptimizelyDto from "../../../src/dto/OptimizelyDto";
-import ExperimentRequestModel from "../../../src/usecase/domain/ExperimentRequestModel";
+import { OptimizelyDto } from "../../../src/dto/OptimizelyDto";
+import { ExperimentRequestModel } from "../../../src/usecase/domain/ExperimentRequestModel";
 import { DeviceType } from "../../../src/type/DeviceType";
 import { AxiosResponse } from "axios";
 

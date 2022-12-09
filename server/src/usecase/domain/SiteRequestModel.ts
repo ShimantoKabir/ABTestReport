@@ -1,10 +1,8 @@
-import { IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
 
-export default class SiteRequestModel {
+export class SiteRequestModel {
 
-  @IsNumber()
-  @ValidateIf((object, value) => value !== null)
-  id: number | null;
+  id?: number;
 
   @IsString()
   @IsNotEmpty()
@@ -21,6 +19,14 @@ export default class SiteRequestModel {
   @IsString()
   @IsNotEmpty()
   apiKey: string;
+
+  @IsString()
+  @IsNotEmpty()
+  sheetId: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  isActive: boolean;
 
   code: number;
   msg: string;

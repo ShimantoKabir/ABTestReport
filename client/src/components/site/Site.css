@@ -1,0 +1,14 @@
+.site-container{
+    margin: 50px 100px;
+}
+.site-header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+.td-100{
+    width: 100px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}

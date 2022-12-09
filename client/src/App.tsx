@@ -1,37 +1,42 @@
-import React from 'react';
 import './App.css';
+import "reflect-metadata";
+import React from 'react';
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import TopNavBar from "./components/TopNavBar/TopNavBar";
-import Site from "./components/Site/Site";
-import Report from "./components/Report/Report";
-import Registration from "./components/Registration/Registration";
-import Login from "./components/Login/Login";
-import Home from "./components/Home/Home";
 import ProtectedRoutes from "./routes/ProtectedRoutes";
 import UnProtectedRoutes from "./routes/UnProtectedRoutes";
-import Error from "./components/Error/Error";
+import {Provider} from "inversify-react";
+import {DiContainer} from "./di";
+import {ProtectedComponent} from "./security/ProtectedComponent";
+import {AlertComponent} from "./components/alert/AlertComponent";
+import {ErrorComponent} from "./components/error/ErrorComponent";
+import {HomeComponent} from './components/home/HomeComponent';
+import {SiteComponent} from './components/site/SiteComponent';
+import {ReportComponent} from './components/report/ReportComponent';
+import {RegistrationComponent} from "./components/registration/RegistrationComponent";
+import {LoginComponent} from "./components/login/LoginComponent";
 
 export default class App extends React.Component {
 	render(): React.ReactNode {
 		return (
-			<div className="App">
+			<Provider container={DiContainer}>
 				<BrowserRouter>
-					<TopNavBar/>
+					<AlertComponent/>
+					<ProtectedComponent/>
 					<Routes>
 						<Route element={<ProtectedRoutes/>}>
-							<Route path="/" element={<Home/>}/>
-							<Route path="/site" element={<Site/>}/>
-							<Route path="/report" element={<Report/>}/>
-							<Route path="/*" element={<Error/>} />
+							<Route path="/home" element={<HomeComponent/>}/>
+							<Route path="/site" element={<SiteComponent/>}/>
+							<Route path="/report" element={<ReportComponent/>}/>
+							<Route path="/*" element={<ErrorComponent/>} />
 						</Route>
 						<Route element={<UnProtectedRoutes/>}>
-							<Route path="/registration" element={<Registration/>}/>
-							<Route path="/login" element={<Login/>}/>
-							<Route path="/*" element={<Error/>} />
+							<Route path="/registration" element={<RegistrationComponent/>}/>
+							<Route path="/" element={<LoginComponent/>}/>
+							<Route path="/*" element={<ErrorComponent/>} />
 						</Route>
 					</Routes>
 				</BrowserRouter>
-			</div>
+			</Provider>
 		)
 	}
 }

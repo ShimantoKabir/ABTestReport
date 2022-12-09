@@ -1,4 +1,4 @@
-import OptimizelyDto from "../OptimizelyDto";
+import { OptimizelyDto } from "../OptimizelyDto";
 
 export interface OptimizelyDtoBuilder{
   withStartTimeUTC(startTimeUTC: string): this

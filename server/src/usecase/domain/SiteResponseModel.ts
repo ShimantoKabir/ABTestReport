@@ -1,11 +1,11 @@
 import { SitePresenter } from "../presenters/SitePresenter";
-import SiteEntity from "../../adapter/data/entities/SiteEntity";
+import { SiteEntity } from "../../adapter/data/entities/SiteEntity";
 import { Pagination } from "nestjs-typeorm-paginate";
 import { IOCode } from "../../common/IOCode";
 import { IOMsg } from "../../common/IOMsg";
-import SiteRequestModel from "./SiteRequestModel";
+import { SiteRequestModel } from "./SiteRequestModel";
 
-export default class SiteResponseModel implements SitePresenter {
+export class SiteResponseModel implements SitePresenter {
 
   code: number;
   msg: string;
@@ -58,6 +58,17 @@ export default class SiteResponseModel implements SitePresenter {
     } else {
       this.code = IOCode.ERROR;
       this.msg = siteRequestModel;
+    }
+    return Promise.resolve(this);
+  }
+
+  activeResponse(isActivated: boolean): Promise<SiteResponseModel> {
+    if (isActivated) {
+      this.code = IOCode.OK;
+      this.msg = IOMsg.SITE_ACTIVATED;
+    } else {
+      this.code = IOCode.ERROR;
+      this.msg = IOMsg.ERROR;
     }
     return Promise.resolve(this);
   }

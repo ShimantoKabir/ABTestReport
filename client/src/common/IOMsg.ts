@@ -3,6 +3,7 @@ export enum IOMsg{
   OK = "Operation successful!",
   LOGOUT = "Logout successful!",
   ERROR_BODY = "Something went wrong, please try again later!",
+  VALIDATION_ERROR = "Please fill up the required field!",
   DATA_POPULATE_SUCCESSFULLY = "Data populate successfully on spread sheet!",
   USER_EXIST = "User already exist!",
   USER_FOUND = "User found!",
@@ -20,4 +21,6 @@ export enum IOMsg{
   LOADING_HEAD = "LOADING",
   SUCCESS_HEAD = "SUCCESS",
   ERROR_HEAD = "ERROR",
+  INIT_LOAD_ERROR = "Initial data not load successfully!",
+  SITE_ACTIVE = "Site activated successfully!",
 }

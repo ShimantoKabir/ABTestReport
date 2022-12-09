@@ -12,9 +12,9 @@ import {
   Query
 } from "@nestjs/common";
 import { SIB, SiteInteractorBoundary } from "../../../usecase/boundaries/SiteInteractorBoundary";
-import SiteRequestModel from "../../../usecase/domain/SiteRequestModel";
-import SiteResponseModel from "../../../usecase/domain/SiteResponseModel";
-import { IPaginationOptions, Pagination } from "nestjs-typeorm-paginate";
+import { SiteRequestModel } from "../../../usecase/domain/SiteRequestModel";
+import { SiteResponseModel } from "../../../usecase/domain/SiteResponseModel";
+import { IPaginationOptions } from "nestjs-typeorm-paginate";
 
 @Controller("sites")
 export class SiteController {
@@ -26,7 +26,7 @@ export class SiteController {
   }
 
   @Post()
-  async Save(
+  async save(
     @Body() siteRequestModel: SiteRequestModel
   ): Promise<SiteResponseModel> {
     return await this.siteInteractorBoundary.save(siteRequestModel);
@@ -65,4 +65,10 @@ export class SiteController {
     return await this.siteInteractorBoundary.getAll(options);
   }
 
+  @Get("active/:id")
+  async active(
+    @Param("id") id: number
+  ): Promise<SiteResponseModel> {
+    return this.siteInteractorBoundary.active(id);
+  }
 }

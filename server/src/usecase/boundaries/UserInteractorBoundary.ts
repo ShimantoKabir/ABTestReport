@@ -1,9 +1,10 @@
-import UserResponseModel from "../domain/UserResponseModel";
-import UserRequestModel from "../domain/UserRequestModel";
+import { UserResponseModel } from "../domain/UserResponseModel";
+import { UserRequestModel } from "../domain/UserRequestModel";
 
 export const UIB = 'UIB';
 export interface UserInteractorBoundary{
   register(userRequestModel : UserRequestModel) : Promise<UserResponseModel>;
   login(userRequestModel : UserRequestModel) : Promise<UserResponseModel>;
-  findByUsername(username : string) : Promise<UserResponseModel>;
+  findByEmail(email : string) : Promise<UserResponseModel>;
+  refresh(id: number, email: string) : Promise<UserResponseModel>
 }

@@ -1,3 +1,3 @@
-export default class AdobeTargetDto{
+export class AdobeTargetDto{
 
 }

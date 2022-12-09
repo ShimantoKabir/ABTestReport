@@ -1,48 +1,61 @@
 import { UserInteractorBoundary } from "./boundaries/UserInteractorBoundary";
-import UserRequestModel from "./domain/UserRequestModel";
-import UserResponseModel from "./domain/UserResponseModel";
+import { UserRequestModel } from "./domain/UserRequestModel";
+import { UserResponseModel } from "./domain/UserResponseModel";
 import { IOMsg } from "../common/IOMsg";
 import { IOCode } from "../common/IOCode";
 import { Inject, Injectable } from "@nestjs/common";
 import { UP, UserPresenter } from "./presenters/UserPresenter";
-import UserEntity from "../adapter/data/entities/UserEntity";
+import { UserEntity } from "../adapter/data/entities/UserEntity";
 import * as bcrypt from "bcrypt";
-import AppConstants from "../common/AppConstants";
+import { AppConstants } from "../common/AppConstants";
 import { US, UserService } from "../adapter/data/services/UserService";
+import { ADB, AuthDtoBuilder } from "../dto/builders/AuthDtoBuilder";
+import { AuthDto } from "../dto/AuthDto";
+import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from "@nestjs/config";
+import { URMB, UserRequestModelBuilder } from "./domain/builders/UserRequestModelBuilder";
+import { AUS, AuthorizedUserService } from "../adapter/data/services/AuthorizedUserService";
 
 @Injectable()
-export default class UserInteractor implements UserInteractorBoundary {
+export class UserInteractor implements UserInteractorBoundary {
 
   constructor(
     @Inject(US)
     private readonly userService: UserService,
     @Inject(UP)
-    private readonly userPresenter: UserPresenter
+    private readonly userPresenter: UserPresenter,
+    @Inject(ADB)
+    private readonly authDtoBuilder: AuthDtoBuilder,
+    @Inject(URMB)
+    private readonly userRequestModelBuilder: UserRequestModelBuilder,
+    @Inject(AUS)
+    private readonly authorizedUserService: AuthorizedUserService,
+    private jwtService: JwtService,
+    private config: ConfigService
   ) {
   }
 
   async login(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
 
-    userRequestModel.msg = IOMsg.LOGIN_SUCCESS;
-    userRequestModel.code = IOCode.OK;
+    const user = await this.userService.getUserByEmail(userRequestModel.email);
 
-    const user = await this.userService.getUserByUsername(userRequestModel.username);
+    const nullAuthDto = this.authDtoBuilder.withAuthToken(null)
+      .withRefreshToken(null)
+      .build();
 
     if (!user) {
-      userRequestModel.msg = IOMsg.LOGIN_UNSUCCESSFUL;
-      userRequestModel.code = IOCode.ERROR;
-      return this.userPresenter.loginResponse(userRequestModel);
+      return this.userPresenter.buildLoginOrRefreshResponse(nullAuthDto);
     }
 
     const isMatch = await bcrypt.compare(userRequestModel.password, user.password);
 
-    if (!isMatch) {
-      userRequestModel.msg = IOMsg.LOGIN_UNSUCCESSFUL;
-      userRequestModel.code = IOCode.ERROR;
-      return this.userPresenter.loginResponse(userRequestModel);
+    if (isMatch) {
+      userRequestModel.id = user.id;
+      const authDto = await this.getTokens(userRequestModel);
+      return this.userPresenter.buildLoginOrRefreshResponse(authDto);
     }
 
-    return this.userPresenter.loginResponse(userRequestModel);
+    return this.userPresenter.buildLoginOrRefreshResponse(nullAuthDto);
   }
 
   async register(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
@@ -52,7 +65,15 @@ export default class UserInteractor implements UserInteractorBoundary {
 
     try {
 
-      const user = await this.userService.getUserByUsername(userRequestModel.username);
+      const authorizedUser = await this.authorizedUserService.readByEmail(userRequestModel.email);
+
+      if (!authorizedUser){
+        userRequestModel.msg = IOMsg.USER_UNAUTHORIZED;
+        userRequestModel.code = IOCode.ERROR;
+        return this.userPresenter.registrationResponse(userRequestModel);
+      }
+
+      const user = await this.userService.getUserByEmail(userRequestModel.email);
 
       if (user) {
         userRequestModel.msg = IOMsg.USER_EXIST;
@@ -67,7 +88,7 @@ export default class UserInteractor implements UserInteractorBoundary {
 
       const userEntity: UserEntity = {
         password: password,
-        username: userRequestModel.username
+        email: userRequestModel.email
       };
 
       const res = await this.userService.save(userEntity);
@@ -88,8 +109,47 @@ export default class UserInteractor implements UserInteractorBoundary {
     }
   }
 
-  async findByUsername(username: string): Promise<UserResponseModel> {
-    const user: UserEntity = await this.userService.getUserByUsername(username);
-    return this.userPresenter.findResponse(user ? user.username : null);
+  async findByEmail(email: string): Promise<UserResponseModel> {
+    const user: UserEntity = await this.userService.getUserByEmail(email);
+    return this.userPresenter.findResponse(user ? user.email : null);
+  }
+
+  async getTokens(userRequestModel: UserRequestModel): Promise<AuthDto> {
+
+    const jwtPayload = {
+      sub: userRequestModel.id,
+      email: userRequestModel.email
+    };
+
+    const [at, rt] = await Promise.all([
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.config.get<string>('AT_SECRET'),
+        expiresIn: this.config.get<string>('AT_SECRET_EXPIRES_IN'),
+      }),
+      this.jwtService.signAsync(jwtPayload, {
+        secret: this.config.get<string>('RT_SECRET'),
+        expiresIn: this.config.get<string>('RT_SECRET_EXPIRES_IN'),
+      }),
+    ]);
+
+    return  this.authDtoBuilder.withAuthToken(at)
+      .withRefreshToken(rt)
+      .build();
+  }
+
+  async refresh(id: number, email: string): Promise<UserResponseModel> {
+    const user = await this.userService.getUserByEmail(email);
+
+    const userRequestModel = this.userRequestModelBuilder.withEmail(user.email)
+      .withId(user.id)
+      .build();
+
+    const tokens = await this.getTokens(userRequestModel);
+
+    const authDto = this.authDtoBuilder.withAuthToken(tokens.authToken)
+      .withRefreshToken(tokens.refreshToken)
+      .build();
+
+    return this.userPresenter.buildLoginOrRefreshResponse(authDto);
   }
 }

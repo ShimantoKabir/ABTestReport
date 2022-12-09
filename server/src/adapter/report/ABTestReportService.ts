@@ -1,4 +1,4 @@
-import ExperimentRequestModel from "../../usecase/domain/ExperimentRequestModel";
+import { ExperimentRequestModel } from "../../usecase/domain/ExperimentRequestModel";
 
 export const ARS = "ARS";
 export interface ABTestReportService<T>{

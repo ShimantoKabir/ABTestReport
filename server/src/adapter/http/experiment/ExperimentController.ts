@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Inject, Post } from "@nestjs/common";
 import { EIB, ExperimentInteractorBoundary } from "../../../usecase/boundaries/ExperimentInteractorBoundary";
-import ExperimentResponseModel from "../../../usecase/domain/ExperimentResponseModel";
-import ExperimentRequestModel from "../../../usecase/domain/ExperimentRequestModel";
+import { ExperimentResponseModel } from "../../../usecase/domain/ExperimentResponseModel";
+import { ExperimentRequestModel } from "../../../usecase/domain/ExperimentRequestModel";
 
 @Controller("experiment")
 export class ExperimentController {

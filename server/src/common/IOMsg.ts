@@ -6,6 +6,7 @@ export enum IOMsg{
   DATA_POPULATE_SUCCESSFULLY = "Data populate successfully on spread sheet!",
   USER_EXIST = "User already exist!",
   USER_FOUND = "User found!",
+  USER_UNAUTHORIZED = "This email address is not authorized yet!",
   USER_NOT_FOUND = "User not found!",
   LOGIN_SUCCESS = "Login successful!",
   REGISTRATION_SUCCESS = "Registration successful!",
@@ -17,5 +18,6 @@ export enum IOMsg{
   NA = "N/A",
   NO_DATA_API = "No data found to populate on spread sheet!",
   NO_SITE = "No site found to populate data on spread sheet!",
-  COMING_SOON = "Other tool service coming soon....!"
+  COMING_SOON = "Other tool service coming soon....!",
+  SITE_ACTIVATED = "Site successfully activated..!"
 }
