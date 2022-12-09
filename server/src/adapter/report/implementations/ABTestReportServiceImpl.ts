@@ -1,14 +1,14 @@
 import { ABTestReportService } from "../ABTestReportService";
-import ExperimentRequestModel from "../../../usecase/domain/ExperimentRequestModel";
+import { ExperimentRequestModel } from "../../../usecase/domain/ExperimentRequestModel";
 import { Inject, Injectable } from "@nestjs/common";
 import { OptimizelyService, OS } from "../../tool/OptimizelyService";
-import OptimizelyDto from "../../../dto/OptimizelyDto";
-import VwoDto from "../../../dto/VwoDto";
-import AdobeTargetDto from "../../../dto/AdobeTargetDto";
+import { OptimizelyDto } from "../../../dto/OptimizelyDto";
+import { VwoDto } from "../../../dto/VwoDto";
+import { AdobeTargetDto } from "../../../dto/AdobeTargetDto";
 import { ToolType } from "../../../type/ToolType";
 
 @Injectable()
-export default class ABTestReportServiceImpl<T extends OptimizelyDto | VwoDto | AdobeTargetDto>
+export class ABTestReportServiceImpl<T extends OptimizelyDto | VwoDto | AdobeTargetDto>
   implements ABTestReportService<T> {
 
   constructor(

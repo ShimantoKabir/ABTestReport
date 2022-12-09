@@ -1,16 +1,23 @@
 import { Injectable } from "@nestjs/common";
 import { UserPresenter } from "../presenters/UserPresenter";
-import UserRequestModel from "./UserRequestModel";
+import { UserRequestModel } from "./UserRequestModel";
 import { IOMsg } from "../../common/IOMsg";
 import { IOCode } from "../../common/IOCode";
+import { AuthDto } from "../../dto/AuthDto";
+import { AuthorizedUserEntity } from "../../adapter/data/entities/AuthorizedUserEntity";
+import { Pagination } from "nestjs-typeorm-paginate";
 
 @Injectable()
-export default class UserResponseModel implements UserPresenter{
+export class UserResponseModel implements UserPresenter{
 
+  id?: number;
   code: number;
   msg: string;
-  username: string;
-  jwtToken: string;
+  email: string;
+  authToken: string;
+  refreshToken: string
+  authorizedUser: AuthorizedUserEntity;
+  authorizedUsers: Pagination<AuthorizedUserEntity>;
 
   async registrationResponse(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
     this.msg = userRequestModel.msg;
@@ -21,23 +28,81 @@ export default class UserResponseModel implements UserPresenter{
   async loginResponse(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
     this.msg = userRequestModel.msg;
     this.code = userRequestModel.code;
-    this.username = userRequestModel.username;
+    this.email = userRequestModel.email;
     return this;
   }
 
-  async findResponse(username?: string): Promise<UserResponseModel> {
+  async findResponse(email?: string): Promise<UserResponseModel> {
     this.msg = IOMsg.USER_NOT_FOUND;
     this.code = IOCode.ERROR;
 
-    if (username){
+    if (email){
       this.msg = IOMsg.USER_FOUND;
       this.code = IOCode.OK
-      this.username = username;
+      this.email = email;
     }
     return this;
   }
 
-  setJwtToken(jwtToken: string): void {
-    this.jwtToken = jwtToken;
+  buildLoginOrRefreshResponse(authDto: AuthDto): Promise<UserResponseModel> {
+
+    this.msg = IOMsg.USER_NOT_FOUND;
+    this.code = IOCode.ERROR
+
+    if (authDto.authToken && authDto.refreshToken){
+      this.msg = IOMsg.LOGIN_SUCCESS;
+      this.code = IOCode.OK;
+      this.authToken = authDto.authToken;
+      this.refreshToken = authDto.refreshToken;
+    }
+
+    return Promise.resolve(this);
+  }
+
+  buildAuthorizedUserEditResponse(userRequestModel: UserRequestModel | string): Promise<UserResponseModel> {
+    if (typeof userRequestModel === "object") {
+      this.code = IOCode.OK;
+      this.msg = IOMsg.UPDATE_OK;
+      this.authorizedUser = userRequestModel;
+    } else {
+      this.code = IOCode.ERROR;
+      this.msg = userRequestModel;
+    }
+    return Promise.resolve(this);
+  }
+
+  buildAuthorizedUserOkResponse(authorizedUserEntity: AuthorizedUserEntity | string): Promise<UserResponseModel> {
+    if (typeof authorizedUserEntity === "object") {
+      this.code = IOCode.OK;
+      this.msg = IOMsg.OK;
+      this.authorizedUser = authorizedUserEntity;
+    } else {
+      this.code = IOCode.ERROR;
+      this.msg = authorizedUserEntity;
+    }
+    return Promise.resolve(this);
+  }
+
+  buildAuthorizedUserRemoveResponse(isRemoved: boolean): Promise<UserResponseModel> {
+    if (isRemoved) {
+      this.code = IOCode.OK;
+      this.msg = IOMsg.OK;
+    } else {
+      this.code = IOCode.ERROR;
+      this.msg = IOMsg.ERROR;
+    }
+    return Promise.resolve(this);
+  }
+
+  buildGetAllAuthorizedUserResponse(pagination: Pagination<AuthorizedUserEntity> | string): Promise<UserResponseModel> {
+    if (typeof pagination === "object") {
+      this.code = IOCode.OK;
+      this.msg = IOMsg.OK;
+      this.authorizedUsers = pagination;
+    }else {
+      this.code = IOCode.ERROR;
+      this.msg = pagination;
+    }
+    return Promise.resolve(this);
   }
 }

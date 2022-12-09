@@ -1,63 +1,51 @@
-import { Body, Controller, Get, Inject, Param, Post, Req, Res } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Req, UseGuards, Request } from "@nestjs/common";
 import { UIB, UserInteractorBoundary } from "../../../usecase/boundaries/UserInteractorBoundary";
-import { Request, Response } from "express";
-import UserRequestModel from "../../../usecase/domain/UserRequestModel";
-import UserResponseModel from "../../../usecase/domain/UserResponseModel";
-import { JwtService } from "@nestjs/jwt";
-import { IOCode } from "../../../common/IOCode";
-import { IOMsg } from "../../../common/IOMsg";
+import { UserRequestModel } from "../../../usecase/domain/UserRequestModel";
+import { UserResponseModel } from "../../../usecase/domain/UserResponseModel";
+import { Public } from "../../security/PublicEndPoint";
+import { RefreshTokenGuard } from "../../security/guards/RefreshTokenGuard";
 
-@Controller("user")
+@Controller("users")
 export class UserController {
 
   constructor(
     @Inject(UIB)
-    private readonly userInteractorBoundary: UserInteractorBoundary,
-    private jwtService: JwtService
+    private readonly userInteractorBoundary: UserInteractorBoundary
   ) {
   }
 
+  @Public()
   @Post("register")
   async register(
-    @Body() userRequestModel: UserRequestModel,
-    @Req() request: Request
+    @Body() userRequestModel: UserRequestModel
   ): Promise<UserResponseModel> {
     return await this.userInteractorBoundary.register(userRequestModel);
   }
 
+  @Public()
   @Post("login")
   async login(
-    @Body() userRequestModel: UserRequestModel,
-    @Res({passthrough: true}) response: Response
+    @Body() userRequestModel: UserRequestModel
   ): Promise<UserResponseModel> {
-
-    const userResponseModel = await this.userInteractorBoundary
-      .login(userRequestModel);
-
-    if (userResponseModel.code === IOCode.OK) {
-      const jwt = await this.jwtService.signAsync({
-        username: userResponseModel.username
-      });
-      userResponseModel.setJwtToken(jwt);
-    }
-
-    return userResponseModel;
+    return await this.userInteractorBoundary.login(userRequestModel);
   }
 
-  @Get(":username")
+  @Get(":email")
   async find(
-    @Param("username") username: string,
-    @Req() request: Request
+    @Param("email") email: string
   ): Promise<UserResponseModel> {
-    return await this.userInteractorBoundary.findByUsername(username);
+    return await this.userInteractorBoundary.findByEmail(email);
   }
 
-  @Post('logout')
-  async logout(@Res({passthrough: true}) response: Response)
-  {
-    return {
-      msg : IOMsg.LOGOUT,
-      code : IOCode.OK
-    }
+  @Post("logout")
+  async logout(@Body() userRequestModel: UserRequestModel) {
+    return userRequestModel;
+  }
+
+  @Public()
+  @UseGuards(RefreshTokenGuard)
+  @Post("refresh")
+  async refresh(@Request() req): Promise<UserResponseModel> {
+    return await this.userInteractorBoundary.refresh(req.user.sub,req.user.email);
   }
 }

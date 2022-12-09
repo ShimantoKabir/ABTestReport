@@ -1,13 +1,15 @@
-import { IsDateString, IsNotEmpty, IsNumber } from "class-validator";
+import { IsEmail, IsNotEmpty, ValidateIf } from "class-validator";
 
-export default class UserRequestModel{
+export class UserRequestModel{
 
-  id: string;
-
-  @IsNotEmpty()
-  username: string;
+  id: number;
 
   @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @IsNotEmpty()
+  @ValidateIf((object, value) => value)
   password: string;
 
   code: number;

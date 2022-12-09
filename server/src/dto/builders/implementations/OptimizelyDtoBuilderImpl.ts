@@ -1,9 +1,9 @@
 import { OptimizelyDtoBuilder } from "../OptimizelyDtoBuilder";
-import OptimizelyDto from "../../OptimizelyDto";
+import { OptimizelyDto } from "../../OptimizelyDto";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export default class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder {
+export class OptimizelyDtoBuilderImpl implements OptimizelyDtoBuilder {
 
   optimizelyDto: OptimizelyDto;
 

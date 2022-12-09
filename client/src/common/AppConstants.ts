@@ -1,9 +1,6 @@
 export default class AppConstants {
-	//public static baseUrl = "http://localhost:3001/";
+	// public static baseUrl = "http://localhost:3001/";
 	public static baseUrl = "https://ab-test-report-server-production.up.railway.app/";
-	public static axiosHeader = {
-		'Content-Type': 'application/json'
-	};
 	public static getAxiosHeader = () => {
 		return {
 			'Content-Type': 'application/json',
@@ -11,7 +8,8 @@ export default class AppConstants {
 		}
 	};
 	public static loggedInCookieName = "isLoggedIn";
-	public static jwtCookieName = "jwt";
+	public static authTokenCookieName = "authToken";
+	public static refreshTokenCookieName = "refreshToken";
 }
 
 function GetJwtToken(): string {

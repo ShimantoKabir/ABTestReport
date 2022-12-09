@@ -1,3 +1,5 @@
+import {KeyValue} from "../dtos/KeyValue";
+
 export enum DeviceType {
 	DESKTOP = "desktop",
 	TABLET = "tablet",
@@ -5,7 +7,7 @@ export enum DeviceType {
 }
 
 export function DeviceTypeToArray() {
-	let deiceTypes: { key: string; value: string; isChecked: boolean, type: string }[] = [];
+	let deiceTypes: KeyValue<string>[] = [];
 	const deviceTypeKeys = Object.keys(DeviceType);
 	const deviceTypeValues = Object.values(DeviceType);
 	deviceTypeKeys.forEach((key, index) => {

@@ -1,3 +1,5 @@
+import {KeyValue} from "../dtos/KeyValue";
+
 export enum SourceType{
 	CAMPAIGN = "campaign",
 	DIRECT = "direct",
@@ -6,7 +8,7 @@ export enum SourceType{
 }
 
 export function SourceTypeToArray() {
-	let sourceType: { key: string; value: string; isChecked: boolean, type: string}[] = [];
+	let sourceType: KeyValue<string>[] = [];
 	const deviceTypeKeys = Object.keys(SourceType);
 	const deviceTypeValues = Object.values(SourceType);
 	deviceTypeKeys.forEach((key,index) => {

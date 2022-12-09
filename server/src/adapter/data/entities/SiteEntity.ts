@@ -1,10 +1,10 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export default class SiteEntity {
+export class SiteEntity {
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id?: number;
 
   @Column()
   siteName: string;
@@ -17,4 +17,10 @@ export default class SiteEntity {
 
   @Column()
   apiKey: string;
+
+  @Column()
+  sheetId: string;
+
+  @Column()
+  isActive: boolean;
 }

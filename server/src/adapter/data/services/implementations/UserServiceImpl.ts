@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { UserService } from "../UserService";
-import UserEntity from "../../entities/UserEntity";
+import { UserEntity } from "../../entities/UserEntity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 @Injectable()
-export default class UserServiceImpl implements UserService {
+export class UserServiceImpl implements UserService {
 
   constructor(
     @InjectRepository(UserEntity)
@@ -13,10 +13,10 @@ export default class UserServiceImpl implements UserService {
   ) {
   }
 
-  async getUserByUsername(username: string): Promise<UserEntity> {
+  async getUserByEmail(email: string): Promise<UserEntity> {
     return await this.userRepository.findOne({
       where: {
-        username: username
+        email: email
       }
     });
   }
