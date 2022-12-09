@@ -4,5 +4,6 @@ import { OptimizelyDto } from "../../dto/OptimizelyDto";
 export const GSS = "GSS";
 export interface GoogleSheetService<T>{
   insert(experimentRequestModel : ExperimentRequestModel) : Promise<boolean>
-  getInput() : Promise<OptimizelyDto | null>
+  getInput(sheetId: string) : Promise<OptimizelyDto | null>
+  clearSheet(sheetId: string) : Promise<boolean>;
 }

@@ -6,10 +6,11 @@ import { EP, ExperimentPresenter } from "./presenters/ExperimentPresenter";
 import { IOMsg } from "../common/IOMsg";
 import { IOCode } from "../common/IOCode";
 import { ABTestReportService, ARS } from "../adapter/report/ABTestReportService";
-import { OptimizelyDto } from "../dto/OptimizelyDto";
+import { OD, OptimizelyDto } from "../dto/OptimizelyDto";
 import { SiteService, SS } from "../adapter/data/services/SiteService";
 import { ToolType } from "../type/ToolType";
 import { GoogleSheetService, GSS } from "../adapter/sheet/GoogleSheetService";
+import { OptimizelyDtoBuilder } from "../dto/builders/OptimizelyDtoBuilder";
 
 @Injectable()
 export default class ExperimentInteractor implements ExperimentInteractorBoundary {
@@ -22,20 +23,16 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     @Inject(SS)
     private readonly siteService: SiteService,
     @Inject(GSS)
-    private readonly optimizelySheetService: GoogleSheetService<OptimizelyDto>
+    private readonly optimizelySheetService: GoogleSheetService<OptimizelyDto>,
+    @Inject(OD)
+    private readonly optimizelyDtoBuilder: OptimizelyDtoBuilder
   ) {
   }
 
   async getInitData(): Promise<ExperimentResponseModel> {
-    const dto: OptimizelyDto = await this.optimizelySheetService.getInput();
-    const sites = await this.siteService.readAll({
-      limit: 10,
-      page: 1
-    });
-
-    const site = sites.items.find(obj=>obj.siteName.includes(dto.siteName));
-    dto.siteId = site.id;
-    return this.experimentPresenter.buildInitResponse(dto,sites);
+    const site = await this.siteService.getActiveSite();
+    const dto: OptimizelyDto = await this.optimizelySheetService.getInput(site.sheetId);
+    return this.experimentPresenter.buildInitResponse(dto);
   }
 
   async populateDataToSheet(experimentRequestModel: ExperimentRequestModel): Promise<ExperimentResponseModel> {
@@ -43,7 +40,7 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
     experimentRequestModel.msg = IOMsg.DATA_POPULATE_SUCCESSFULLY;
     experimentRequestModel.code = IOCode.OK;
 
-    const site = await this.siteService.readById(experimentRequestModel.siteId);
+    const site = await this.siteService.getActiveSite();
 
     if (!site) {
       experimentRequestModel.msg = IOMsg.NO_SITE;
@@ -61,6 +58,8 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
       key: "ALL"
     });
 
+    await this.optimizelySheetService.clearSheet(site.sheetId);
+
     const totalReport = experimentRequestModel.deviceTypes.length +
       experimentRequestModel.sourceTypes.length ;
 
@@ -72,6 +71,9 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
         ...experimentRequestModel.deviceTypes,
         ...experimentRequestModel.sourceTypes
       ];
+
+      let offset = 1;
+      let limit = 20;
 
       for (const obj of types) {
         if (obj.isChecked){
@@ -86,15 +88,18 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
             experimentRequestModel.sourceType = obj.value;
           }
 
-          experimentRequestModel.sheetRange = obj.key+"!A:T";
+          experimentRequestModel.title = obj.key;
+          experimentRequestModel.sheetRange = `Api-Report!A${offset}:T${offset+limit}`;
+
           experimentRequestModel.dtoList = await this.optimizelyReportService
             .getReportData(experimentRequestModel) as OptimizelyDto[];
 
           if (experimentRequestModel.dtoList.length > 0) {
-            const isInsertOK = await this.optimizelySheetService
-              .insert(experimentRequestModel);
+            await this.optimizelySheetService.insert(experimentRequestModel);
           }
+
           totalGeneratedReport++;
+          offset = offset + limit;
         }
       }
 
@@ -104,13 +109,14 @@ export default class ExperimentInteractor implements ExperimentInteractorBoundar
         return await this.experimentPresenter
           .buildResponse(experimentRequestModel);
       }
-
     } else {
       experimentRequestModel.msg = IOMsg.COMING_SOON;
       experimentRequestModel.code = IOCode.ERROR;
-      return await this.experimentPresenter.buildResponse(experimentRequestModel);
+      return await this.experimentPresenter
+        .buildResponse(experimentRequestModel);
     }
 
-    return await this.experimentPresenter.buildResponse(experimentRequestModel);
+    return await this.experimentPresenter
+      .buildResponse(experimentRequestModel);
   }
 }

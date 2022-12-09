@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsNotEmpty, IsNumber, ValidateIf } from "class-validator";
+import { IsArray, IsDateString, IsNotEmpty, IsNumber, IsString, ValidateIf } from "class-validator";
 import { VwoDto } from "../../dto/VwoDto";
 import { OptimizelyDto } from "../../dto/OptimizelyDto";
 import { AdobeTargetDto } from "../../dto/AdobeTargetDto";
@@ -6,9 +6,9 @@ import { Checkbox } from "../../dto/Checkbox";
 
 export class ExperimentRequestModel{
 
-  @IsNumber()
+  @IsString()
   @ValidateIf((object, value) => value !== null)
-  id: number | null;
+  experimentId?: string | null;
 
   @IsDateString()
   @ValidateIf((object, value) => value)
@@ -26,15 +26,12 @@ export class ExperimentRequestModel{
   @IsNotEmpty()
   sourceTypes: Checkbox[];
 
-  @IsNumber()
-  @IsNotEmpty()
-  siteId: number;
-
   code?: number;
   msg?: string;
   apiKey?: string;
-  sheetId?: string;
   sheetRange?: string;
+  titleRange?: string;
+  title?: string;
   toolType?: number;
   deviceType?: string;
   sourceType?: string;

@@ -21,8 +21,6 @@ export class OptimizelyServiceImpl implements OptimizelyService {
     let optimizelyDTOs: OptimizelyDto[] = [];
     let url = this.addQueryToUrl(experimentRequestModel);
 
-    console.log("url: ",url);
-
     try {
 
       const networkRes = await this.httpService.axiosRef.get(url, {
@@ -110,7 +108,7 @@ export class OptimizelyServiceImpl implements OptimizelyService {
 
   addQueryToUrl(experimentRequestModel: ExperimentRequestModel): string {
 
-    let url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.id}/results?`;
+    let url = `https://api.optimizely.com/v2/experiments/${experimentRequestModel.experimentId}/results?`;
 
     if (experimentRequestModel.startDate) {
       url = url + `start_time=${experimentRequestModel.startDate}&`;

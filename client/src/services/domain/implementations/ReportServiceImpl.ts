@@ -18,6 +18,7 @@ export class ReportServiceImpl implements ReportService{
 			if (res.data.code === IOCode.OK){
 				return Promise.resolve(res.data.input);
 			}
+
 			return Promise.resolve(null);
 		}catch (e) {
 			return Promise.resolve(null);
@@ -27,7 +28,7 @@ export class ReportServiceImpl implements ReportService{
 	async populate(reportDto: ReportDto): Promise<boolean> {
 		try {
 			const res = await this.httpService.getInstance().post<ResponseDto>("/experiment/populate",{
-				id: reportDto.experimentId,
+				experimentId: reportDto.experimentId,
 				startDate: reportDto.startDate,
 				endDate: reportDto.endDate,
 				deviceTypes: reportDto.deviceTypes,

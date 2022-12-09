@@ -69,4 +69,10 @@ export class SiteServiceImpl implements SiteService {
       return Promise.resolve(false);
     }
   }
+
+  async getActiveSite(): Promise<SiteEntity> {
+    return await this.siteRepository.findOneBy({
+      isActive: true
+    });
+  }
 }

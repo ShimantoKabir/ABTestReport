@@ -1,14 +1,12 @@
-import {SiteDto} from "./SiteDto";
 import {KeyValue} from "./KeyValue";
 
 export class ReportDto {
-	experimentId!: number;
+	experimentId!: string;
 	startDate!: string;
 	endDate!: string;
-	sites!: SiteDto[];
 	siteName!: string;
-	startDateOffset!: number;
-	endDateOffset!: number;
+	startDateOffset!: string;
+	endDateOffset!: string;
 	deviceTypes!: KeyValue<string>[];
 	sourceTypes!: KeyValue<string>[];
 }

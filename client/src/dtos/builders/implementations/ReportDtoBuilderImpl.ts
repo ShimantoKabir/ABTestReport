@@ -1,7 +1,7 @@
 import {ReportDtoBuilder} from "../ReportDtoBuilder";
 import {ReportDto} from "../../ReportDto";
-import {SiteDto} from "../../SiteDto";
 import {injectable} from "inversify";
+import {KeyValue} from "../../KeyValue";
 
 @injectable()
 export class ReportDtoBuilderImpl implements ReportDtoBuilder{
@@ -17,12 +17,12 @@ export class ReportDtoBuilderImpl implements ReportDtoBuilder{
 		return this;
 	}
 
-	withEndDateOffset(endDateOffset: number): this {
+	withEndDateOffset(endDateOffset: string): this {
 		this.reportDto.endDateOffset = endDateOffset;
 		return this;
 	}
 
-	withExperimentId(experimentId: number): this {
+	withExperimentId(experimentId: string): this {
 		this.reportDto.experimentId = experimentId;
 		return this;
 	}
@@ -32,18 +32,23 @@ export class ReportDtoBuilderImpl implements ReportDtoBuilder{
 		return this;
 	}
 
-	withSites(sites: SiteDto[]): this {
-		this.reportDto.sites = sites;
-		return this;
-	}
-
 	withStartDate(startDate: string): this {
 		this.reportDto.startDate = startDate;
 		return this;
 	}
 
-	withStartDateOffset(startDateOffset: number): this {
+	withStartDateOffset(startDateOffset: string): this {
 		this.reportDto.startDateOffset = startDateOffset;
+		return this;
+	}
+
+	withDeviceTypes(deviceTypes: KeyValue<string>[]): this {
+		this.reportDto.deviceTypes = deviceTypes;
+		return this;
+	}
+
+	withSourceTypes(sourceTypes: KeyValue<string>[]): this {
+		this.reportDto.sourceTypes = sourceTypes;
 		return this;
 	}
 

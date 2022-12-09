@@ -15,12 +15,17 @@ export class ReportComponent extends Component {
 	@resolve(ACM)
 	private readonly alert!: AlertComponentModel
 
-	componentDidMount() {
+	componentDidMount = async () => {
 		this.model.loadInitData();
+		this.alert.startLoading();
+		const alertDto = await this.model.fetchActiveExperiment();
+		this.alert.changeModalState(alertDto);
 	}
 
 	onFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
-		this.model.validateForm(e);
+		this.alert.startLoading();
+		const alertDto = await this.model.doSubmitForm(e);
+		this.alert.changeModalState(alertDto);
 	}
 
 	render(): React.ReactNode {
@@ -60,7 +65,7 @@ export class ReportComponent extends Component {
 							Please pick start date
 						</Form.Control.Feedback>
 					</Form.Group>
-					<Form.Group className="mb-3" controlId=" ">
+					<Form.Group className="mb-3" controlId="endDate">
 						<Form.Label>End Date</Form.Label>
 						<Form.Control
 							required

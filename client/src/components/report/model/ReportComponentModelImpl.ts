@@ -1,6 +1,5 @@
 import {ReportComponentModel} from "./ReportComponentModel";
 import {KeyValue} from "../../../dtos/KeyValue";
-import {SiteDto} from "../../../dtos/SiteDto";
 import {AlertDto} from "../../../dtos/AlertDto";
 import {ChangeEvent, FormEvent} from "react";
 import {inject, injectable} from "inversify";
@@ -21,7 +20,6 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 	endDate: string = "";
 	endDateOffset: string = "";
 	isFormValid: boolean = false;
-	sites: SiteDto[] = [];
 	sourceTypes: KeyValue<string>[] = [];
 	startDate: string = "";
 	startDateOffset: string = "";
@@ -44,7 +42,6 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 			endDate: observable,
 			endDateOffset: observable,
 			isFormValid: observable,
-			sites: observable,
 			sourceTypes: observable,
 			startDate: observable,
 			startDateOffset: observable,
@@ -53,7 +50,8 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 			getIsoDateTime: action,
 			getSourceTypes: action,
 			onCheckboxClick: action,
-			doSubmitForm: action
+			doSubmitForm: action,
+			fetchActiveExperiment: action
 		});
 	}
 
@@ -64,13 +62,43 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 		return e.currentTarget.checkValidity();
 	}
 
-	doSubmitForm(e: FormEvent<HTMLFormElement>): Promise<AlertDto> {
+	async doSubmitForm(e: FormEvent<HTMLFormElement>): Promise<AlertDto> {
 
-		let alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
-		.withStatus(true)
-		.withTitle(IOMsg.ERROR_HEAD)
-		.withBody(IOMsg.ERROR_BODY)
-		.build();
+		const isValid = this.validateForm(e)
+		let alertDto: AlertDto | null = null;
+
+		if (!isValid){
+			alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+			.withStatus(true)
+			.withTitle(IOMsg.ERROR_HEAD)
+			.withBody(IOMsg.VALIDATION_ERROR)
+			.build();
+			return Promise.resolve(alertDto);
+		}
+
+		const reportDto = this.reportDtoBuilder.withExperimentId(this.experimentId)
+			.withStartDate(this.getIsoDateTime(this.startDate,this.startDateOffset))
+			.withEndDate(this.getIsoDateTime(this.endDate,this.endDateOffset))
+			.withDeviceTypes(this.deviceTypes)
+			.withSourceTypes(this.sourceTypes)
+			.build();
+
+		const isPopulated = await this.reportService.populate(reportDto);
+
+		if (isPopulated){
+			alertDto = this.alertDtoBuilder.withCode(IOCode.OK)
+			.withStatus(true)
+			.withTitle(IOMsg.SUCCESS_HEAD)
+			.withBody(IOMsg.DATA_POPULATE_SUCCESSFULLY)
+			.build();
+			return Promise.resolve(alertDto);
+		}
+
+		alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+			.withStatus(true)
+			.withTitle(IOMsg.ERROR_HEAD)
+			.withBody(IOMsg.ERROR_BODY)
+			.build();
 
 		return Promise.resolve(alertDto);
 	}
@@ -125,11 +153,8 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 			case "endDate":
 				this.endDate = e.target.value;
 				break;
-			case "sheetId":
-				this.sheetId = e.target.value;
-				break;
 			default:
-				this.toolType = Number(e.target.value);
+				this.siteName = e.target.value;
 		}
 	}
 
@@ -137,6 +162,33 @@ export class ReportComponentModelImpl implements ReportComponentModel{
 		this.deviceTypes = DeviceTypeToArray();
 		this.sourceTypes = SourceTypeToArray();
 		return false;
+	}
+
+	async fetchActiveExperiment(): Promise<AlertDto> {
+
+		let alertDto = this.alertDtoBuilder.withCode(IOCode.ERROR)
+		.withStatus(true)
+		.withTitle(IOMsg.ERROR_HEAD)
+		.withBody(IOMsg.INIT_LOAD_ERROR)
+		.build();
+
+		const reportDto = await this.reportService.init();
+
+		if (reportDto !== null){
+
+			this.experimentId = reportDto.experimentId;
+			this.startDate = this.formatDate(reportDto.startDate);
+			this.endDate = this.formatDate(reportDto.endDate);
+			this.siteName = reportDto.siteName;
+
+			alertDto = this.alertDtoBuilder.withCode(IOCode.OK)
+			.withStatus(false)
+			.withTitle(IOMsg.SUCCESS_HEAD)
+			.withBody(IOMsg.INIT_LOAD_MSG)
+			.build();
+		}
+
+		return Promise.resolve(alertDto);
 	}
 
 }

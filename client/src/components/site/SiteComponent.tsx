@@ -165,7 +165,7 @@ export class SiteComponent extends Component {
 								Add
 							</Button>
 						</div>
-						<Table striped bordered hover size="sm" responsive>
+						<Table striped bordered hover size="sm" responsive >
 							<thead>
 							<tr>
 								<th>SL</th>
@@ -193,8 +193,8 @@ export class SiteComponent extends Component {
 									</td>
 									<td>{item.clientName}</td>
 									<td>{item.siteName}</td>
-									<td>{item.apiKey}</td>
-									<td>{item.sheetId}</td>
+									<td><div className="td-100" >{item.apiKey}</div></td>
+									<td><div className="td-100" >{item.sheetId}</div></td>
 									<td>{ToolType[item.toolType]}</td>
 									<td>
 										<Button

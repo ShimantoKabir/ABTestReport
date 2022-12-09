@@ -174,11 +174,12 @@ export class SiteComponentModelImpl  implements SiteComponentModel{
 
 	setModelData(siteDto: SiteDto): Promise<boolean> {
 		this.id = siteDto.id;
-		this.clientName = siteDto.siteName;
+		this.clientName = siteDto.clientName;
 		this.siteName = siteDto.siteName;
 		this.apiKey = siteDto.apiKey;
 		this.sheetId = siteDto.sheetId;
 		this.toolType = siteDto.toolType;
+		this.isActive = siteDto.isActive;
 		return Promise.resolve(false);
 	}
 

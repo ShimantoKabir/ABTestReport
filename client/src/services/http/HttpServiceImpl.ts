@@ -41,6 +41,7 @@ export class HttpServiceImpl implements HttpService{
 					'Authorization': 'Bearer '+ authToken
 				}
 			}else {
+				console.log("Token Refreshed!");
 				try {
 					const refreshRes = await axios({
 						method: 'post',
@@ -51,8 +52,8 @@ export class HttpServiceImpl implements HttpService{
 					});
 
 					const userDto = this.userDtoBuilder.withAuthToken(refreshRes.data.authToken)
-					.withRefreshToken(refreshRes.data.refreshToken)
-					.build();
+						.withRefreshToken(refreshRes.data.refreshToken)
+						.build();
 
 					this.cookieService.setAuthCookie(userDto);
 

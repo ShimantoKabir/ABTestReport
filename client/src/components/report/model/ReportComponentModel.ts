@@ -1,4 +1,3 @@
-import {SiteDto} from "../../../dtos/SiteDto";
 import {KeyValue} from "../../../dtos/KeyValue";
 import {ChangeEvent, FormEvent} from "react";
 import {AlertDto} from "../../../dtos/AlertDto";
@@ -12,7 +11,6 @@ export interface ReportComponentModel {
 	startDateOffset: string;
 	endDateOffset: string;
 	isFormValid: boolean;
-	sites: SiteDto[],
 	deviceTypes: KeyValue<string>[];
 	sourceTypes: KeyValue<string>[];
 	getIsoDateTime(dateString: string, offset: string): string;
@@ -24,4 +22,5 @@ export interface ReportComponentModel {
 	onInputChange(e: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) : void;
 	loadInitData() : boolean;
 	validateForm(e: FormEvent<HTMLFormElement>) : boolean;
+	fetchActiveExperiment() : Promise<AlertDto>;
 }
