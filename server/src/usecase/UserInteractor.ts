@@ -3,7 +3,7 @@ import { UserRequestModel } from "./domain/UserRequestModel";
 import { UserResponseModel } from "./domain/UserResponseModel";
 import { IOMsg } from "../common/IOMsg";
 import { IOCode } from "../common/IOCode";
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, Logger } from "@nestjs/common";
 import { UP, UserPresenter } from "./presenters/UserPresenter";
 import { UserEntity } from "../adapter/data/entities/UserEntity";
 import * as bcrypt from "bcrypt";
@@ -15,6 +15,8 @@ import { JwtService } from "@nestjs/jwt";
 import { ConfigService } from "@nestjs/config";
 import { URMB, UserRequestModelBuilder } from "./domain/builders/UserRequestModelBuilder";
 import { AUS, AuthorizedUserService } from "../adapter/data/services/AuthorizedUserService";
+import { MailerService } from "@nestjs-modules/mailer";
+import { v4 } from "uuid";
 
 @Injectable()
 export class UserInteractor implements UserInteractorBoundary {
@@ -31,7 +33,8 @@ export class UserInteractor implements UserInteractorBoundary {
     @Inject(AUS)
     private readonly authorizedUserService: AuthorizedUserService,
     private jwtService: JwtService,
-    private config: ConfigService
+    private config: ConfigService,
+    private mailService: MailerService
   ) {
   }
 
@@ -151,5 +154,87 @@ export class UserInteractor implements UserInteractorBoundary {
       .build();
 
     return this.userPresenter.buildLoginOrRefreshResponse(authDto);
+  }
+
+  async generateResetPasswordLink(userRequestModel: UserRequestModel):
+    Promise<UserResponseModel>
+  {
+    let result: string = null;
+
+    try {
+
+      const user: UserEntity = await this.userService
+        .getUserByEmail(userRequestModel.email);
+
+      if (!user){
+        const result = "This '"
+          +userRequestModel.email
+          +"' email did not belong to any account!";
+        return this.userPresenter.buildResetPasswordLinkResponse(result);
+      }
+
+      const token = v4();
+      user.token = token;
+      user.tokenExp = Date.now();
+      const updateRes = await this.userService.update(user);
+
+      const res = await this.mailService.sendMail({
+        to: userRequestModel.email,
+        from: process.env.SMTP_USER,
+        subject: 'Password Reset',
+        template: 'password-reset',
+        context : {
+          resetLink : "http://localhost:3000/users/password/reset?email="+userRequestModel.email+"&token="+token
+        }
+      });
+
+      if(updateRes.affected > 0 && res.accepted.length > 0){
+        return this.userPresenter.buildResetPasswordLinkResponse(result);
+      }else {
+        return this.userPresenter.buildResetPasswordLinkResponse(IOMsg.ERROR);
+      }
+    }catch (e) {
+      Logger.error("MailError",e);
+      return this.userPresenter.buildResetPasswordLinkResponse(IOMsg.ERROR);
+    }
+  }
+
+  async changeResetPasswordLink(userRequestModel: UserRequestModel): Promise<UserResponseModel> {
+
+    if (userRequestModel.password !== userRequestModel.confirmPassword){
+      return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_NOT_MATCHED);
+    }
+
+    const user: UserEntity = await this.userService
+      .getUserByEmailAndToken(userRequestModel);
+
+    if (!user){
+      return this.userPresenter.buildChangePasswordResponse(IOMsg.USER_NOT_FOUND);
+    }
+
+    const oldDate = user.tokenExp + (1 * 1 * 15 * 1 * 1)
+
+    console.log("oldDate: ", oldDate);
+    console.log("user.tokenExp: ", user.tokenExp);
+    console.log("date: ", new Date(oldDate).toLocaleTimeString())
+
+    if (Date.now() < oldDate) {
+      return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_TOKEN_EXPIRED);
+    }
+
+    // user.password = await bcrypt.hash(
+    //   userRequestModel.password,
+    //   AppConstants.SALT_OR_ROUNDS
+    // );
+    // user.tokenExp = null;
+    // user.token = null;
+    //
+    // const updateRes = await this.userService.update(user);
+    //
+    // if (updateRes.affected === 0){
+    //   return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_RESET_UNSUCCESSFUL);
+    // }
+
+    return this.userPresenter.buildChangePasswordResponse(null);
   }
 }

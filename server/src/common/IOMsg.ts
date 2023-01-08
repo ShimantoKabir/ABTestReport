@@ -8,10 +8,13 @@ export enum IOMsg{
   USER_FOUND = "User found!",
   USER_UNAUTHORIZED = "This email address is not authorized yet!",
   USER_NOT_FOUND = "User not found!",
+  PASSWORD_NOT_MATCHED = "Password and confirm password not matched!",
   LOGIN_SUCCESS = "Login successful!",
+  PASSWORD_TOKEN_EXPIRED = "Password change time has been expired!",
   REGISTRATION_SUCCESS = "Registration successful!",
   LOGIN_UNSUCCESSFUL = "Login unsuccessful!",
   REGISTRATION_UNSUCCESSFUL = "Registration unsuccessful!",
+  PASSWORD_RESET_UNSUCCESSFUL = "Password reset unsuccessful!",
   JWT_ERROR = "JWT token missing!",
   UPDATE_OK = "Update successful!",
   NOT_FOUND = "Not found!",
@@ -19,5 +22,7 @@ export enum IOMsg{
   NO_DATA_API = "No data found to populate on spread sheet!",
   NO_SITE = "No site found to populate data on spread sheet!",
   COMING_SOON = "Other tool service coming soon....!",
-  SITE_ACTIVATED = "Site successfully activated..!"
+  SITE_ACTIVATED = "Site successfully activated..!",
+  RESET_CHANGED = "Password changed successfully!",
+  RESET_PASSWORD = "A mail has been sent to your email address, please click the mail and reset you password."
 }

@@ -7,4 +7,6 @@ export interface UserInteractorBoundary{
   login(userRequestModel : UserRequestModel) : Promise<UserResponseModel>;
   findByEmail(email : string) : Promise<UserResponseModel>;
   refresh(id: number, email: string) : Promise<UserResponseModel>
+  generateResetPasswordLink(userRequestModel: UserRequestModel): Promise<UserResponseModel>;
+  changeResetPasswordLink(userRequestModel: UserRequestModel): Promise<UserResponseModel>;
 }

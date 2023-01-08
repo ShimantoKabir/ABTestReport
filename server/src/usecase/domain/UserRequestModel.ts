@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, ValidateIf } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString, ValidateIf } from "class-validator";
 
 export class UserRequestModel{
 
@@ -9,8 +9,16 @@ export class UserRequestModel{
   email: string;
 
   @IsNotEmpty()
-  @ValidateIf((object, value) => value)
+  @IsOptional()
   password: string;
+
+  @IsString()
+  @IsOptional()
+  confirmPassword: string;
+
+  @IsString()
+  @IsOptional()
+  token: string;
 
   code: number;
   msg: string;

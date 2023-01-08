@@ -14,5 +14,8 @@ export interface UserPresenter{
   buildAuthorizedUserOkResponse(authorizedUserEntity : AuthorizedUserEntity | string) : Promise<UserResponseModel>;
   buildAuthorizedUserRemoveResponse(isRemoved: boolean) : Promise<UserResponseModel>;
   buildGetAllAuthorizedUserResponse(pagination: Pagination<AuthorizedUserEntity> | string) : Promise<UserResponseModel>;
+
+  buildResetPasswordLinkResponse(result: string): Promise<UserResponseModel>;
+  buildChangePasswordResponse(result: string): Promise<UserResponseModel>;
 }
 export const UP = 'UP';

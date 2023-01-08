@@ -11,4 +11,10 @@ export class UserEntity{
 
   @Column()
   password: string;
+
+  @Column({ nullable: true })
+  token?: string;
+
+  @Column({ nullable: true })
+  tokenExp?: number;
 }

@@ -105,4 +105,26 @@ export class UserResponseModel implements UserPresenter{
     }
     return Promise.resolve(this);
   }
+
+  buildResetPasswordLinkResponse(result:string): Promise<UserResponseModel> {
+    if (result === null){
+      this.code = IOCode.OK;
+      this.msg = IOMsg.RESET_PASSWORD;
+    }else {
+      this.code = IOCode.ERROR;
+      this.msg = result;
+    }
+    return Promise.resolve(this);
+  }
+
+  buildChangePasswordResponse(result: string): Promise<UserResponseModel> {
+    if (result === null){
+      this.code = IOCode.OK;
+      this.msg = IOMsg.RESET_CHANGED;
+    }else {
+      this.code = IOCode.ERROR;
+      this.msg = result;
+    }
+    return Promise.resolve(this);
+  }
 }

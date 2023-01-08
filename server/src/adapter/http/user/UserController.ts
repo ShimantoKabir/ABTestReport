@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Inject, Param, Post, Req, UseGuards, Request } from "@nestjs/common";
+import { Body, Controller, Get, Inject, Param, Post, Req, UseGuards, Request, Query } from "@nestjs/common";
 import { UIB, UserInteractorBoundary } from "../../../usecase/boundaries/UserInteractorBoundary";
 import { UserRequestModel } from "../../../usecase/domain/UserRequestModel";
 import { UserResponseModel } from "../../../usecase/domain/UserResponseModel";
@@ -47,5 +47,22 @@ export class UserController {
   @Post("refresh")
   async refresh(@Request() req): Promise<UserResponseModel> {
     return await this.userInteractorBoundary.refresh(req.user.sub,req.user.email);
+  }
+
+  @Public()
+  @Get("password/reset-link")
+  async getResetPasswordLink(
+    @Query() userRequestModel: UserRequestModel
+  ): Promise<UserResponseModel> {
+    return await
+      this.userInteractorBoundary.generateResetPasswordLink(userRequestModel);
+  }
+
+  @Public()
+  @Post("password/reset")
+  async resetPasswordLink(
+    @Body() userRequestModel: UserRequestModel
+  ): Promise<UserResponseModel> {
+    return await this.userInteractorBoundary.changeResetPasswordLink(userRequestModel);
   }
 }
