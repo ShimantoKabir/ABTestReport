@@ -41,6 +41,7 @@ export class TopNavComponent extends React.Component{
 					<Navbar.Collapse id="responsive-navbar-nav">
 						<Nav className="me-auto"></Nav>
 						<Nav>
+							<Link to="/user" className="nav-link" >User</Link>
 							<Link to="/site" className="nav-link" >Site</Link>
 							<Link to="/report" className="nav-link" >Report</Link>
 							<LogoutComponent  onLogout={this.doLogout}/>
