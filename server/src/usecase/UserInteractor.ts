@@ -175,7 +175,7 @@ export class UserInteractor implements UserInteractorBoundary {
 
       const token = v4();
       user.token = token;
-      user.tokenExp = Date.now();
+      user.tokenExp = new Date().toISOString();
       const updateRes = await this.userService.update(user);
 
       const res = await this.mailService.sendMail({
@@ -212,28 +212,26 @@ export class UserInteractor implements UserInteractorBoundary {
       return this.userPresenter.buildChangePasswordResponse(IOMsg.USER_NOT_FOUND);
     }
 
-    const oldDate = user.tokenExp + (1 * 1 * 15 * 1 * 1)
+    // seconds * minutes * hours * milliseconds = 1 day
+    const oneDay = 60 * 60 * 24 * 1000;
+    const oldDate = new Date(user.tokenExp).getTime() + oneDay;
 
-    console.log("oldDate: ", oldDate);
-    console.log("user.tokenExp: ", user.tokenExp);
-    console.log("date: ", new Date(oldDate).toLocaleTimeString())
-
-    if (Date.now() < oldDate) {
+    if (oldDate < Date.now()) {
       return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_TOKEN_EXPIRED);
     }
 
-    // user.password = await bcrypt.hash(
-    //   userRequestModel.password,
-    //   AppConstants.SALT_OR_ROUNDS
-    // );
-    // user.tokenExp = null;
-    // user.token = null;
-    //
-    // const updateRes = await this.userService.update(user);
-    //
-    // if (updateRes.affected === 0){
-    //   return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_RESET_UNSUCCESSFUL);
-    // }
+    user.password = await bcrypt.hash(
+      userRequestModel.password,
+      AppConstants.SALT_OR_ROUNDS
+    );
+    user.tokenExp = null;
+    user.token = null;
+
+    const updateRes = await this.userService.update(user);
+
+    if (updateRes.affected === 0){
+      return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_RESET_UNSUCCESSFUL);
+    }
 
     return this.userPresenter.buildChangePasswordResponse(null);
   }

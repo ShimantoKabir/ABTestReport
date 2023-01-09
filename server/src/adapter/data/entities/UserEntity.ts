@@ -16,5 +16,5 @@ export class UserEntity{
   token?: string;
 
   @Column({ nullable: true })
-  tokenExp?: number;
+  tokenExp?: string;
 }
