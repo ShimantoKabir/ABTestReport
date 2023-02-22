@@ -217,7 +217,8 @@ export class UserInteractor implements UserInteractorBoundary {
     const oldDate = new Date(user.tokenExp).getTime() + oneDay;
 
     if (oldDate < Date.now()) {
-      return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_TOKEN_EXPIRED);
+      return this.userPresenter
+        .buildChangePasswordResponse(IOMsg.PASSWORD_TOKEN_EXPIRED);
     }
 
     user.password = await bcrypt.hash(
@@ -230,7 +231,8 @@ export class UserInteractor implements UserInteractorBoundary {
     const updateRes = await this.userService.update(user);
 
     if (updateRes.affected === 0){
-      return this.userPresenter.buildChangePasswordResponse(IOMsg.PASSWORD_RESET_UNSUCCESSFUL);
+      return this.userPresenter
+        .buildChangePasswordResponse(IOMsg.PASSWORD_RESET_UNSUCCESSFUL);
     }
 
     return this.userPresenter.buildChangePasswordResponse(null);
